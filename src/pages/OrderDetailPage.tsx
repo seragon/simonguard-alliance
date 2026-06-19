@@ -1,10 +1,11 @@
-// 발주 상세: 내용 조회, 수정/삭제, PDF 버튼
+// 발주 상세: 내용 조회, 상태 즉시 변경, 수정/삭제, PDF
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { useOrder, useDeleteOrder } from "../data/orders";
-import { statusLabel, statusBadge } from "../domain/status";
+import { useOrder, useDeleteOrder, useUpdateOrder } from "../data/orders";
+import { statusLabel, statusBadge, ALL_STATUSES } from "../domain/status";
 import { useToast } from "../components/Toast";
 import { OrderSheetDocument } from "../pdf/OrderSheetDocument";
+import type { OrderStatus } from "../types/db";
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ export default function OrderDetailPage() {
   const { show } = useToast();
   const { data: o, isLoading } = useOrder(id);
   const del = useDeleteOrder();
+  const updateOrder = useUpdateOrder();
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-40">
@@ -25,7 +27,7 @@ export default function OrderDetailPage() {
   );
 
   return (
-    <div className="space-y-4 max-w-xl">
+    <div className="space-y-4 w-full">
       {/* 헤더 */}
       <div className="flex items-start gap-3">
         <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors flex-shrink-0 mt-0.5">
@@ -34,44 +36,102 @@ export default function OrderDetailPage() {
           </svg>
         </button>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-xl font-bold text-zinc-100">{o.order_no}</h2>
-            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusBadge(o.status)}`}>
-              {statusLabel(o.status)}
-            </span>
-          </div>
+          <h2 className="text-xl font-bold text-zinc-100">{o.order_no}</h2>
           <p className="text-sm text-zinc-500 mt-0.5">{o.brand_name} {o.model_name}</p>
+          {/* 상태 선택 버튼 - 항상 표시, 클릭 즉시 저장 */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            {ALL_STATUSES.map((s) => (
+              <button
+                key={s}
+                disabled={updateOrder.isPending}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  o.status === s
+                    ? statusBadge(s)
+                    : "text-zinc-500 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+                onClick={async () => {
+                  if (o.status === s) return;
+                  try {
+                    await updateOrder.mutateAsync({
+                      id: o.id,
+                      order: { status: s as OrderStatus },
+                      items: o.items.map((it) => ({ module_id: it.module_id, quantity: it.quantity })),
+                    });
+                    show(`상태 변경: ${statusLabel(s)}`);
+                  } catch {
+                    show("상태 변경 실패", "error");
+                  }
+                }}
+              >
+                {statusLabel(s)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* 기본 정보 */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        {[
-          ["발주회사", o.order_company_name],
-          ["원단", o.fabric_label],
-          ["발주일", o.order_date],
-          ["납기일", o.due_date],
-        ].map(([label, value]) => (
-          <div key={label} className="flex justify-between items-center px-4 py-3 border-b border-zinc-800 last:border-0">
-            <span className="text-sm text-zinc-500">{label}</span>
-            <span className="text-sm text-zinc-100 font-medium">{value}</span>
+        {/* 발주회사 */}
+        <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-800">
+          <span className="text-sm text-zinc-500">발주회사</span>
+          <span className="text-sm text-zinc-100 font-medium">{o.order_company_name}</span>
+        </div>
+
+        {/* 원단: 라벨 좌측, 이미지+이름 우측 세로 정렬 */}
+        <div className="px-4 py-3 border-b border-zinc-800 flex justify-between items-start gap-4">
+          <span className="text-sm text-zinc-500 pt-1">원단</span>
+          <div className="flex flex-col items-end gap-1.5">
+            {o.fabric_image_url && (
+              <img
+                src={o.fabric_image_url}
+                alt="원단 이미지"
+                className="w-32 h-32 object-cover rounded-lg border border-zinc-700"
+              />
+            )}
+            <span className="text-sm text-zinc-100 font-medium text-right">{o.fabric_label}</span>
           </div>
-        ))}
+        </div>
+
+        {/* 발주일 */}
+        <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-800">
+          <span className="text-sm text-zinc-500">발주일</span>
+          <span className="text-sm text-zinc-100 font-medium">{o.order_date}</span>
+        </div>
+
+        {/* 납기일 */}
+        <div className="flex justify-between items-center px-4 py-3">
+          <span className="text-sm text-zinc-500">납기일</span>
+          <span className="text-sm text-zinc-100 font-medium">{o.due_date}</span>
+        </div>
       </div>
 
-      {/* 모듈 조합 */}
+      {/* 모듈 조합 - 가로 가득 채우는 카드 레이아웃 */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-zinc-800">
           <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">모듈 조합</p>
         </div>
-        <ul className="divide-y divide-zinc-800">
+        <div className="flex flex-col gap-4 p-4">
           {o.items.map((it) => (
-            <li key={it.module_id} className="flex justify-between items-center px-4 py-3">
-              <span className="text-sm text-zinc-200">{it.module_name}</span>
-              <span className="text-sm font-semibold text-zinc-100 tabular-nums">× {it.quantity}</span>
-            </li>
+            <div key={it.module_id} className="bg-zinc-800/60 border border-zinc-700/60 rounded-xl overflow-hidden flex flex-col w-full">
+              {/* 모듈 이미지 */}
+              <div className="w-full aspect-video md:aspect-[21/9] bg-zinc-800 flex items-center justify-center overflow-hidden">
+                {it.image_url ? (
+                  <img src={it.image_url} alt={it.module_name} className="w-full h-full object-cover" />
+                ) : (
+                  <svg className="w-12 h-12 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                  </svg>
+                )}
+              </div>
+              {/* 이름 + 수량 */}
+              <div className="p-3 flex justify-between items-center bg-zinc-900/40 border-t border-zinc-800/80">
+                <p className="text-sm text-zinc-200 font-medium truncate flex-1">{it.module_name}</p>
+                <span className="text-sm text-indigo-400 font-semibold flex-shrink-0">× {it.quantity}</span>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       {/* 비고 */}

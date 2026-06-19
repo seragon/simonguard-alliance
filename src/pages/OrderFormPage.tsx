@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useBrands, useSofaModels, useModules, useFabricCompanies, useFabrics, useOrderCompanies } from "../data/masterData";
 import { useOrder, useCreateOrder, useUpdateOrder } from "../data/orders";
 import { validateOrderForm } from "../domain/validation";
-import { ALL_STATUSES, statusLabel } from "../domain/status";
+import { ALL_STATUSES, statusLabel, statusBadge } from "../domain/status";
 import { useAuth } from "../auth/useAuth";
 import { useToast } from "../components/Toast";
 import type { OrderStatus } from "../types/db";
@@ -82,7 +82,7 @@ export default function OrderFormPage() {
   }
 
   return (
-    <div className="space-y-4 max-w-xl">
+    <div className="space-y-4 w-full">
       <div className="flex items-center gap-3">
         <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -94,68 +94,157 @@ export default function OrderFormPage() {
 
       {/* 소파 선택 */}
       <Section title="소파 선택">
+        {/* 브랜드 */}
         <div>
           <label className={labelCls}>브랜드</label>
-          <select className={fieldCls} value={brandId} onChange={(e) => { setBrandId(e.target.value); setModelId(""); setQty({}); }}>
-            <option value="">브랜드 선택</option>
-            {(brands.data ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          <div className="flex flex-wrap gap-2">
+            {(brands.data ?? []).map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  brandId === b.id
+                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
+            {(brands.data ?? []).length === 0 && (
+              <p className="text-sm text-zinc-600">브랜드 데이터가 없습니다.</p>
+            )}
+          </div>
         </div>
 
+        {/* 모델 */}
         {brandId && (
           <div>
             <label className={labelCls}>모델</label>
-            <select className={fieldCls} value={modelId} onChange={(e) => { setModelId(e.target.value); setQty({}); }}>
-              <option value="">모델 선택</option>
-              {(models.data ?? []).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {(models.data ?? []).map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => { setModelId(m.id); setQty({}); }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    modelId === m.id
+                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                  }`}
+                >
+                  {m.name}
+                </button>
+              ))}
+              {(models.data ?? []).length === 0 && (
+                <p className="text-sm text-zinc-600">모델 데이터가 없습니다.</p>
+              )}
+            </div>
           </div>
         )}
 
+        {/* 모듈 카드 그리드 (이미지 위, 이름 아래, +/- 수량) */}
         {modelId && (
-          <div className="space-y-2">
+          <div>
             <label className={labelCls}>모듈 조합 (수량 입력)</label>
-            <div className="space-y-2">
-              {(modules.data ?? []).map((m) => (
-                <div key={m.id} className="flex items-center gap-3 bg-zinc-800 rounded-lg px-3 py-2.5">
-                  {m.image_url && <img src={m.image_url} alt="" className="w-8 h-8 object-cover rounded flex-shrink-0" />}
-                  <span className="flex-1 text-sm text-zinc-200">{m.name}</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors text-sm font-bold"
-                      onClick={() => setQty({ ...qty, [m.id]: Math.max(0, (qty[m.id] ?? 0) - 1) })}
-                    >−</button>
-                    <span className="w-8 text-center text-sm font-medium text-zinc-100">{qty[m.id] ?? 0}</span>
-                    <button
-                      type="button"
-                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors text-sm font-bold"
-                      onClick={() => setQty({ ...qty, [m.id]: (qty[m.id] ?? 0) + 1 })}
-                    >+</button>
+            {(modules.data ?? []).length === 0 ? (
+              <p className="text-sm text-zinc-600">모듈 데이터가 없습니다.</p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {(modules.data ?? []).map((m) => (
+                  <div
+                    key={m.id}
+                    className={`flex flex-col rounded-xl border overflow-hidden transition-colors ${
+                      (qty[m.id] ?? 0) > 0
+                        ? "border-indigo-500/40 bg-indigo-600/10"
+                        : "border-zinc-700 bg-zinc-800/50"
+                    }`}
+                  >
+                    {/* 이미지 */}
+                    <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                      {m.image_url ? (
+                        <img src={m.image_url} alt={m.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                        </svg>
+                      )}
+                    </div>
+                    {/* 이름 */}
+                    <p className="text-xs text-center text-zinc-200 font-medium px-2 pt-2 truncate">{m.name}</p>
+                    {/* 수량 조절 */}
+                    <div className="flex items-center justify-center gap-2 p-2">
+                      <button
+                        type="button"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                        onClick={() => setQty({ ...qty, [m.id]: Math.max(0, (qty[m.id] ?? 0) - 1) })
+                        }
+                      >−</button>
+                      <span className="w-6 text-center text-sm font-semibold text-zinc-100">{qty[m.id] ?? 0}</span>
+                      <button
+                        type="button"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                        onClick={() => setQty({ ...qty, [m.id]: (qty[m.id] ?? 0) + 1 })}
+                      >+</button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </Section>
 
       {/* 원단 선택 */}
       <Section title="원단 선택">
+        {/* 원단회사 */}
         <div>
           <label className={labelCls}>원단회사</label>
-          <select className={fieldCls} value={companyFabricId} onChange={(e) => { setCompanyFabricId(e.target.value); setFabricId(""); }}>
-            <option value="">원단회사 선택</option>
-            {(fabricCompanies.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          <div className="flex flex-wrap gap-2">
+            {(fabricCompanies.data ?? []).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  companyFabricId === c.id
+                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+              >
+                {c.name}
+              </button>
+            ))}
+            {(fabricCompanies.data ?? []).length === 0 && (
+              <p className="text-sm text-zinc-600">원단회사 데이터가 없습니다.</p>
+            )}
+          </div>
         </div>
+
+        {/* 원단 (이름/색상) */}
         {companyFabricId && (
           <div>
             <label className={labelCls}>원단 (이름/색상)</label>
-            <select className={fieldCls} value={fabricId} onChange={(e) => setFabricId(e.target.value)}>
-              <option value="">원단 선택</option>
-              {(fabrics.data ?? []).map((f) => <option key={f.id} value={f.id}>{f.name} / {f.color}</option>)}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {(fabrics.data ?? []).map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setFabricId(f.id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    fabricId === f.id
+                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                  }`}
+                >
+                  {f.name} / {f.color}
+                </button>
+              ))}
+              {(fabrics.data ?? []).length === 0 && (
+                <p className="text-sm text-zinc-600">원단 데이터가 없습니다.</p>
+              )}
+            </div>
           </div>
         )}
       </Section>
@@ -164,10 +253,25 @@ export default function OrderFormPage() {
       <Section title="발주 정보">
         <div>
           <label className={labelCls}>발주회사</label>
-          <select className={fieldCls} value={orderCompanyId} onChange={(e) => setOrderCompanyId(e.target.value)}>
-            <option value="">발주회사 선택</option>
-            {(orderCompanies.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          <div className="flex flex-wrap gap-2">
+            {(orderCompanies.data ?? []).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setOrderCompanyId(c.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  orderCompanyId === c.id
+                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+              >
+                {c.name}
+              </button>
+            ))}
+            {(orderCompanies.data ?? []).length === 0 && (
+              <p className="text-sm text-zinc-600">발주회사 데이터가 없습니다.</p>
+            )}
+          </div>
         </div>
         <div>
           <label className={labelCls}>납기일</label>
@@ -175,9 +279,22 @@ export default function OrderFormPage() {
         </div>
         <div>
           <label className={labelCls}>상태</label>
-          <select className={fieldCls} value={status} onChange={(e) => setStatus(e.target.value as OrderStatus)}>
-            {ALL_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
-          </select>
+          <div className="flex flex-wrap gap-2">
+            {ALL_STATUSES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStatus(s)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  status === s
+                    ? statusBadge(s)
+                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+              >
+                {statusLabel(s)}
+              </button>
+            ))}
+          </div>
         </div>
         <div>
           <label className={labelCls}>비고</label>

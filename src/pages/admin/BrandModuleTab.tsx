@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useBrands, useSofaModels, useModules, useCreate, useUpdate, useDelete } from "../../data/masterData";
 import CrudList from "../../components/CrudList";
-import ImageCrudList from "../../components/ImageCrudList";
+import ModuleCardGrid from "../../components/ModuleCardGrid";
 
 export default function BrandModuleTab() {
   const [brandId, setBrandId] = useState<string>();
@@ -16,7 +16,7 @@ export default function BrandModuleTab() {
   const cMo = useCreate("modules"), uMo = useUpdate("modules"), dMo = useDelete("modules");
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="flex flex-col gap-6">
       {/* 브랜드 */}
       <div className="space-y-3">
         <CrudList
@@ -29,19 +29,21 @@ export default function BrandModuleTab() {
         {(brands.data ?? []).length > 0 && (
           <div className="space-y-1">
             <p className="text-xs text-zinc-500 font-medium px-1">브랜드 선택 → 모델 관리</p>
-            {(brands.data ?? []).map((b) => (
-              <button
-                key={b.id}
-                onClick={() => { setBrandId(b.id); setModelId(undefined); }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  brandId === b.id
-                    ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/40"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
-                }`}
-              >
-                {b.name}
-              </button>
-            ))}
+            <div className="flex flex-wrap gap-2">
+              {(brands.data ?? []).map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => { setBrandId(b.id); setModelId(undefined); }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    brandId === b.id
+                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                  }`}
+                >
+                  {b.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -60,19 +62,21 @@ export default function BrandModuleTab() {
             {(models.data ?? []).length > 0 && (
               <div className="space-y-1">
                 <p className="text-xs text-zinc-500 font-medium px-1">모델 선택 → 모듈 관리</p>
-                {(models.data ?? []).map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => setModelId(m.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      modelId === m.id
-                        ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/40"
-                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
-                    }`}
-                  >
-                    {m.name}
-                  </button>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {(models.data ?? []).map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => setModelId(m.id)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        modelId === m.id
+                          ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                          : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                      }`}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </>
@@ -86,8 +90,7 @@ export default function BrandModuleTab() {
       {/* 모듈 */}
       <div>
         {modelId ? (
-          <ImageCrudList
-            title="모듈"
+          <ModuleCardGrid
             items={modules.data ?? []}
             onCreate={(name, imageUrl) => cMo.mutateAsync({ name, model_id: modelId, image_url: imageUrl })}
             onUpdate={(id, name, imageUrl) => uMo.mutateAsync({ id, name, image_url: imageUrl })}
