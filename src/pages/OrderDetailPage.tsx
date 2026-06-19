@@ -1,8 +1,10 @@
-// 발주 상세: 내용 조회, 수정/삭제, PDF 버튼(Task 15에서 추가)
+// 발주 상세: 내용 조회, 수정/삭제, PDF 버튼
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useOrder, useDeleteOrder } from "../data/orders";
 import { statusLabel } from "../domain/status";
 import { useToast } from "../components/Toast";
+import { OrderSheetDocument } from "../pdf/OrderSheetDocument";
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -54,7 +56,13 @@ export default function OrderDetailPage() {
 
       {/* 액션 버튼 */}
       <div className="flex gap-2">
-        {/* PDF 버튼은 Task 15에서 이 위치에 추가 */}
+        <PDFDownloadLink
+          document={<OrderSheetDocument order={o} />}
+          fileName={`${o.order_no}.pdf`}
+          className="bg-slate-900 text-white rounded-lg px-4 py-2 text-sm"
+        >
+          {({ loading }) => (loading ? "PDF 생성 중…" : "발주서 PDF")}
+        </PDFDownloadLink>
         <Link to={`/orders/${o.id}/edit`} className="border rounded-lg px-4 py-2 text-sm">수정</Link>
         <button
           className="border border-red-300 text-red-600 rounded-lg px-4 py-2 text-sm"
