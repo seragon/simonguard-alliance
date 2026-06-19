@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useBrands, useSofaModels, useModules, useCreate, useUpdate, useDelete } from "../../data/masterData";
 import CrudList from "../../components/CrudList";
+import ImageCrudList from "../../components/ImageCrudList";
 
 export default function BrandModuleTab() {
   const [brandId, setBrandId] = useState<string>();
@@ -17,7 +18,7 @@ export default function BrandModuleTab() {
   return (
     <div className="grid gap-6 md:grid-cols-3">
       {/* 브랜드 */}
-      <div>
+      <div className="space-y-3">
         <CrudList
           title="브랜드"
           items={brands.data ?? []}
@@ -25,22 +26,28 @@ export default function BrandModuleTab() {
           onUpdate={(id, name) => uB.mutateAsync({ id, name })}
           onDelete={(id) => dB.mutateAsync(id)}
         />
-        <ul className="mt-2 text-sm">
-          {(brands.data ?? []).map((b) => (
-            <li key={b.id}>
+        {(brands.data ?? []).length > 0 && (
+          <div className="space-y-1">
+            <p className="text-xs text-zinc-500 font-medium px-1">브랜드 선택 → 모델 관리</p>
+            {(brands.data ?? []).map((b) => (
               <button
-                className={brandId === b.id ? "font-bold" : ""}
+                key={b.id}
                 onClick={() => { setBrandId(b.id); setModelId(undefined); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  brandId === b.id
+                    ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/40"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
               >
-                · {b.name} 선택
+                {b.name}
               </button>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 소파 모델 */}
-      <div>
+      <div className="space-y-3">
         {brandId ? (
           <>
             <CrudList
@@ -50,36 +57,46 @@ export default function BrandModuleTab() {
               onUpdate={(id, name) => uM.mutateAsync({ id, name })}
               onDelete={(id) => dM.mutateAsync(id)}
             />
-            <ul className="mt-2 text-sm">
-              {(models.data ?? []).map((m) => (
-                <li key={m.id}>
+            {(models.data ?? []).length > 0 && (
+              <div className="space-y-1">
+                <p className="text-xs text-zinc-500 font-medium px-1">모델 선택 → 모듈 관리</p>
+                {(models.data ?? []).map((m) => (
                   <button
-                    className={modelId === m.id ? "font-bold" : ""}
+                    key={m.id}
                     onClick={() => setModelId(m.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                      modelId === m.id
+                        ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/40"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                    }`}
                   >
-                    · {m.name} 선택
+                    {m.name}
                   </button>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            )}
           </>
         ) : (
-          <p className="text-sm text-slate-500">브랜드를 선택하세요.</p>
+          <div className="flex items-center justify-center h-24 border border-dashed border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-600">← 브랜드를 선택하세요.</p>
+          </div>
         )}
       </div>
 
       {/* 모듈 */}
       <div>
         {modelId ? (
-          <CrudList
+          <ImageCrudList
             title="모듈"
             items={modules.data ?? []}
-            onCreate={(name) => cMo.mutateAsync({ name, model_id: modelId })}
-            onUpdate={(id, name) => uMo.mutateAsync({ id, name })}
+            onCreate={(name, imageUrl) => cMo.mutateAsync({ name, model_id: modelId, image_url: imageUrl })}
+            onUpdate={(id, name, imageUrl) => uMo.mutateAsync({ id, name, image_url: imageUrl })}
             onDelete={(id) => dMo.mutateAsync(id)}
           />
         ) : (
-          <p className="text-sm text-slate-500">모델을 선택하세요.</p>
+          <div className="flex items-center justify-center h-24 border border-dashed border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-600">← 모델을 선택하세요.</p>
+          </div>
         )}
       </div>
     </div>

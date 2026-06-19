@@ -5,11 +5,12 @@ import type { Order, OrderStatus } from "../types/db";
 import type { OrderFormInput } from "../domain/validation";
 
 /** 발주 + 조인된 표시명을 포함하는 뷰 타입 */
-export interface OrderItemView { module_id: string; module_name: string; quantity: number; }
+export interface OrderItemView { module_id: string; module_name: string; quantity: number; image_url: string | null; }
 export interface OrderWithRefs extends Order {
   brand_name: string;
   model_name: string;
   fabric_label: string;
+  fabric_image_url: string | null;
   order_company_name: string;
   items: OrderItemView[];
 }
@@ -17,8 +18,8 @@ export interface OrderWithRefs extends Order {
 // 조인 조회 select 문
 const SELECT = `*,
   brands(name), sofa_models(name), order_companies(name),
-  fabrics(name, color, fabric_companies(name)),
-  order_items(quantity, module_id, modules(name))`;
+  fabrics(name, color, image_url, fabric_companies(name)),
+  order_items(quantity, module_id, modules(name, image_url))`;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapRow(r: any): OrderWithRefs {
@@ -30,11 +31,13 @@ function mapRow(r: any): OrderWithRefs {
     fabric_label: r.fabrics
       ? `${r.fabrics.fabric_companies?.name ?? ""} ${r.fabrics.name}/${r.fabrics.color}`
       : "",
+    fabric_image_url: r.fabrics?.image_url ?? null,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items: (r.order_items ?? []).map((it: any) => ({
       module_id: it.module_id,
       module_name: it.modules?.name ?? "",
       quantity: it.quantity,
+      image_url: it.modules?.image_url ?? null,
     })),
   };
 }
@@ -127,8 +130,12 @@ export function useDeleteOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("orders").delete().eq("id", id);
+      const { error, count } = await supabase
+        .from("orders")
+        .delete({ count: "exact" })
+        .eq("id", id);
       if (error) throw error;
+      if (count === 0) throw new Error("삭제 권한이 없거나 발주를 찾을 수 없습니다.");
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
   });

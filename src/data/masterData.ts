@@ -64,8 +64,15 @@ export function useDelete(table: TableName) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from(table).delete().eq("id", id);
-      if (error) throw error;
+      const { error, count } = await supabase
+        .from(table)
+        .delete({ count: "exact" })
+        .eq("id", id);
+      if (error) {
+        if (error.code === "23503") throw new Error("발주에서 사용 중인 항목은 삭제할 수 없습니다. 해당 발주를 먼저 삭제하세요.");
+        throw new Error(error.message);
+      }
+      if (count === 0) throw new Error("삭제 권한이 없습니다. 최고관리자 계정으로 로그인했는지 확인하세요.");
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [table] }),
   });

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useOrders } from "../data/orders";
 import { useBrands, useOrderCompanies } from "../data/masterData";
-import { ALL_STATUSES, statusLabel, statusColor } from "../domain/status";
+import { ALL_STATUSES, statusLabel, statusColor, statusBadge } from "../domain/status";
 import type { OrderStatus } from "../types/db";
 
 export default function OrderList() {
@@ -22,13 +22,19 @@ export default function OrderList() {
     to: to || undefined,
   });
 
-  const sel = "border rounded-lg px-2 py-2 text-sm";
+  const sel = "bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500";
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">발주 리스트</h2>
-        <Link to="/orders/new" className="bg-slate-900 text-white rounded-lg px-4 py-2 text-sm">
+        <h2 className="font-semibold text-zinc-100">발주 리스트</h2>
+        <Link
+          to="/orders/new"
+          className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
           발주 등록
         </Link>
       </div>
@@ -44,7 +50,7 @@ export default function OrderList() {
           {(brands.data ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
         </select>
         <select className={sel} value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
-          <option value="">발주회사 전체</option>
+          <option value="">발주처 전체</option>
           {(companies.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <input type="date" className={sel} value={from} onChange={(e) => setFrom(e.target.value)} />
@@ -52,21 +58,28 @@ export default function OrderList() {
       </div>
 
       {/* 리스트 */}
-      <ul className="divide-y border rounded-lg">
+      <ul className="divide-y divide-zinc-800 border border-zinc-800 rounded-xl overflow-hidden">
         {(orders.data ?? []).map((o) => (
           <li key={o.id}>
-            <Link to={`/orders/${o.id}`} className="flex items-center gap-3 px-3 py-3">
-              <span className={`w-2.5 h-2.5 rounded-full ${statusColor(o.status)}`} />
+            <Link
+              to={`/orders/${o.id}`}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-zinc-800/50 transition-colors"
+            >
+              <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusColor(o.status)}`} />
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{o.brand_name} {o.model_name}</p>
-                <p className="text-xs text-slate-500 truncate">{o.order_company_name} · 납기 {o.due_date}</p>
+                <p className="font-medium text-sm text-zinc-100 truncate">{o.brand_name} {o.model_name}</p>
+                <p className="text-xs text-zinc-500 truncate mt-0.5">{o.order_company_name} · 납기 {o.due_date}</p>
               </div>
-              <span className="text-xs">{statusLabel(o.status)}</span>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${statusBadge(o.status)}`}>
+                {statusLabel(o.status)}
+              </span>
             </Link>
           </li>
         ))}
         {orders.data?.length === 0 && (
-          <li className="px-3 py-6 text-center text-slate-500 text-sm">발주가 없습니다.</li>
+          <li className="px-4 py-10 text-center">
+            <p className="text-zinc-600 text-sm">발주가 없습니다.</p>
+          </li>
         )}
       </ul>
     </div>

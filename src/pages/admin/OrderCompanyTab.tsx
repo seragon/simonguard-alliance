@@ -1,6 +1,6 @@
-// 발주회사 관리 탭
+// 발주회사(로고 포함) 관리 탭
 import { useOrderCompanies, useCreate, useUpdate, useDelete } from "../../data/masterData";
-import CrudList from "../../components/CrudList";
+import ImageCrudList from "../../components/ImageCrudList";
 
 export default function OrderCompanyTab() {
   const list = useOrderCompanies();
@@ -8,11 +8,11 @@ export default function OrderCompanyTab() {
 
   return (
     <div className="max-w-md">
-      <CrudList
+      <ImageCrudList
         title="발주회사"
         items={list.data ?? []}
-        onCreate={(name) => c.mutateAsync({ name })}
-        onUpdate={(id, name) => u.mutateAsync({ id, name })}
+        onCreate={(name, imageUrl) => c.mutateAsync({ name, image_url: imageUrl })}
+        onUpdate={(id, name, imageUrl) => u.mutateAsync({ id, name, image_url: imageUrl })}
         onDelete={(id) => d.mutateAsync(id)}
       />
     </div>

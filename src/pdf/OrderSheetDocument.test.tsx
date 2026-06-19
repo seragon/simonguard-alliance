@@ -22,9 +22,10 @@ const sample: OrderWithRefs = {
   model_name: "소파 A형",
   fabric_label: "한국원단 프리미엄/베이지",
   order_company_name: "테스트 발주회사",
+  fabric_image_url: null,
   items: [
-    { module_id: "module-1", module_name: "좌측 팔걸이", quantity: 2 },
-    { module_id: "module-2", module_name: "우측 팔걸이", quantity: 1 },
+    { module_id: "module-1", module_name: "좌측 팔걸이", quantity: 2, image_url: null },
+    { module_id: "module-2", module_name: "우측 팔걸이", quantity: 1, image_url: null },
   ],
 };
 
