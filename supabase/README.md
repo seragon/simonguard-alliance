@@ -13,6 +13,7 @@ Supabase 프로젝트가 준비되면 아래 두 가지 방법 중 하나로 적
 3. `supabase/migrations/0001_init.sql` 파일 전체 내용을 복사하여 에디터에 붙여 넣습니다.
 4. **Run** 버튼을 클릭합니다.
 5. 에러 없이 완료되면 9개 테이블과 RLS 정책이 생성됩니다.
+6. 이어서 `supabase/migrations/0002_order_write_rpc.sql`도 동일하게 실행합니다. 발주 원자 쓰기에 필요한 `create_order_with_items`, `update_order_with_items` 함수가 등록됩니다.
 
 확인 쿼리.
 ```sql

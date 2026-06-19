@@ -90,35 +90,33 @@ type OrderWrite = Omit<OrderFormInput, "items"> & {
   created_by: string;
 };
 
-/** 발주 신규 등록 */
+/** 발주 신규 등록 (RPC로 원자 처리) */
 export function useCreateOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ order, items }: { order: OrderWrite; items: OrderFormInput["items"] }) => {
-      const { data, error } = await supabase.from("orders").insert(order).select("id").single();
+      const { data, error } = await supabase.rpc("create_order_with_items", {
+        p_order: order,
+        p_items: items,
+      });
       if (error) throw error;
-      const { error: e2 } = await supabase.from("order_items").insert(buildOrderItemsPayload(data.id, items));
-      if (e2) throw e2;
-      return data.id as string;
+      return data as string;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
   });
 }
 
-/** 발주 수정 (order_items는 전체 교체 방식) */
+/** 발주 수정 (RPC로 원자 처리 — order_items 전체 교체) */
 export function useUpdateOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, order, items }: { id: string; order: Partial<OrderWrite>; items: OrderFormInput["items"] }) => {
-      const { error } = await supabase
-        .from("orders")
-        .update({ ...order, updated_at: new Date().toISOString() })
-        .eq("id", id);
+      const { error } = await supabase.rpc("update_order_with_items", {
+        p_id: id,
+        p_order: order,
+        p_items: items,
+      });
       if (error) throw error;
-      // 기존 order_items 삭제 후 재삽입
-      await supabase.from("order_items").delete().eq("order_id", id);
-      const { error: e2 } = await supabase.from("order_items").insert(buildOrderItemsPayload(id, items));
-      if (e2) throw e2;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
   });
