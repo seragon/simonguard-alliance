@@ -1,5 +1,5 @@
 // 첫 진입 로그인 페이지
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 export default function LoginPage() {
@@ -7,7 +7,9 @@ export default function LoginPage() {
   const nav = useNavigate();
   const [email, setEmail] = useState(""); const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null); const [busy, setBusy] = useState(false);
-  if (session) { nav("/", { replace: true }); }
+  useEffect(() => {
+    if (session) nav("/", { replace: true });
+  }, [session, nav]);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setErr(null);
     const { error } = await signIn(email, pw); setBusy(false);
