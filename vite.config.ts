@@ -3,7 +3,12 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import type { Plugin } from "vite";
 
-/** テスト環境で .ttf import をプロジェクトルートからの絶対パスに解決するプラグイン */
+/**
+ * Vitest 환경 전용 플러그인: .ttf import를 절대 파일시스템 경로로 해석하여
+ * fontkit이 테스트 중 폰트 파일을 직접 읽을 수 있게 한다.
+ * 프로덕션 빌드에서는 비활성화되어 Vite 기본 asset 처리(assetsInclude)가
+ * 번들된 해시 URL을 생성하도록 한다.
+ */
 function ttfResolverPlugin(): Plugin {
   return {
     name: "ttf-resolver",
@@ -15,14 +20,16 @@ function ttfResolverPlugin(): Plugin {
     },
     load(id) {
       if (!id.endsWith(".ttf")) return null;
-      // Return the absolute path as the module's default export
+      // 절대 파일시스템 경로를 모듈의 default export로 반환
       return `export default ${JSON.stringify(id)};`;
     },
   };
 }
 
+const isVitest = !!process.env.VITEST;
+
 export default defineConfig({
-  plugins: [react(), ttfResolverPlugin()],
+  plugins: [react(), ...(isVitest ? [ttfResolverPlugin()] : [])],
   assetsInclude: ["**/*.ttf"],
   test: {
     environment: "jsdom",
