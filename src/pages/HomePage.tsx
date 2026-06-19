@@ -1,4 +1,11 @@
-// 메인 페이지: 캘린더 + 발주 리스트 (Task 12/13에서 구현)
+// 메인 페이지: 캘린더(Task 13) + 발주 리스트
+import OrderList from "../components/OrderList";
+
 export default function HomePage() {
-  return <div className="p-4 text-slate-500">메인 페이지 (발주 리스트 + 캘린더)</div>;
+  return (
+    <div className="space-y-6">
+      {/* 캘린더는 Task 13에서 이 위에 추가 */}
+      <OrderList />
+    </div>
+  );
 }
