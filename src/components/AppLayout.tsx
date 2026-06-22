@@ -15,7 +15,7 @@ export default function AppLayout() {
     <div className="min-h-screen flex flex-col bg-zinc-950">
       {/* 상단 헤더 */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800">
-        <Link to="/" className="flex items-center rounded-lg hover:opacity-80 transition-opacity" aria-label="홈으로">
+        <Link to="/" className="flex items-center gap-2 rounded-lg hover:opacity-80 transition-opacity" aria-label="홈으로">
           {/* 하얀색으로 렌더링되도록 brightness(0) invert(1) 필터 적용 */}
           <img
             src="/logo_simonguard.png"
@@ -23,6 +23,9 @@ export default function AppLayout() {
             className="h-5 w-auto"
             style={{ filter: "brightness(0) invert(1)" }}
           />
+          <span className="text-xs text-zinc-400 font-medium border-l border-zinc-800 pl-2.5 ml-0.5">
+            발주관리 시스템
+          </span>
         </Link>
 
         {/* 데스크톱 내비 */}
