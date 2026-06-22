@@ -1,5 +1,5 @@
 // 반응형 앱 셸: 상단 헤더 + 모바일 하단 탭/데스크톱 상단 메뉴
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 
 export default function AppLayout() {
@@ -15,14 +15,15 @@ export default function AppLayout() {
     <div className="min-h-screen flex flex-col bg-zinc-950">
       {/* 상단 헤더 */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-            </svg>
-          </div>
-          <span className="font-semibold text-zinc-100 text-sm">사이몬가드얼라이언스</span>
-        </div>
+        <Link to="/" className="flex items-center rounded-lg hover:opacity-80 transition-opacity" aria-label="홈으로">
+          {/* 하얀색으로 렌더링되도록 brightness(0) invert(1) 필터 적용 */}
+          <img
+            src="/logo_simonguard.png"
+            alt="사이몬가드얼라이언스"
+            className="h-5 w-auto"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+        </Link>
 
         {/* 데스크톱 내비 */}
         <nav className="hidden sm:flex items-center gap-1">
