@@ -44,6 +44,7 @@ export default function FabricTab() {
             onCreate={(name, imageUrl) => cC.mutateAsync({ name, image_url: imageUrl })}
             onUpdate={(id, name, imageUrl) => uC.mutateAsync({ id, name, image_url: imageUrl })}
             onDelete={(id) => dC.mutateAsync(id)}
+            previewMode="logo"
           />
         </div>
         {(companies.data ?? []).length > 0 ? (
@@ -59,7 +60,7 @@ export default function FabricTab() {
               >
                 {c.image_url ? (
                   <div className="w-full max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30 rounded-apple-sm">
-                    <img src={c.image_url} alt="" className="w-full h-auto object-contain" />
+                    <img src={c.image_url} alt="" className="w-full h-auto max-h-[60px] min-h-[50px] object-contain" />
                   </div>
                 ) : (
                   <div className="w-full max-h-[60px] min-h-[50px] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5 rounded-apple-sm">

@@ -24,7 +24,7 @@ function BrandCard({ brand, selected, onSelect, onSave, onDelete }: {
     return (
       <div className="bg-white border border-apple-primary/30 rounded-apple-lg p-3 space-y-2 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
         <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} autoFocus />
-        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode="logo" />
         <div className="flex gap-2">
           <button
             className="flex-1 bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-1.5 text-xs font-medium transition-all active-scale"
@@ -52,7 +52,7 @@ function BrandCard({ brand, selected, onSelect, onSave, onDelete }: {
       >
         {brand.image_url ? (
           <div className="w-full max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/20 rounded-apple-sm">
-            <img src={brand.image_url} alt={brand.name} className="w-full h-auto object-contain mix-blend-multiply" />
+            <img src={brand.image_url} alt={brand.name} className="w-full h-auto max-h-[60px] min-h-[50px] object-contain mix-blend-multiply" />
           </div>
         ) : (
           <div className="w-full max-h-[60px] min-h-[50px] rounded-apple-sm bg-apple-canvas-parchment border border-apple-hairline flex items-center justify-center mb-1.5">
@@ -123,7 +123,7 @@ export default function BrandModuleTab() {
         {/* 추가 폼 */}
         <div className="bg-white border border-apple-hairline rounded-apple-lg p-4 space-y-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
           <input className={inputCls} placeholder="브랜드 이름 입력" value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
-          <ImageUpload value={newBrandImage} onChange={setNewBrandImage} />
+          <ImageUpload value={newBrandImage} onChange={setNewBrandImage} previewMode="logo" />
           <button onClick={handleCreateBrand} className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale">추가</button>
         </div>
 

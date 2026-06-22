@@ -32,7 +32,7 @@ export default function OrderCompanyTab() {
           <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">발주회사 이름</label>
           <input className={inputCls} placeholder="발주회사 이름 입력" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
-        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode="logo" />
         <button
           onClick={handleCreate}
           className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale"
@@ -77,7 +77,7 @@ function CompanyRow({ item, onSave, onDelete }: {
           onChange={(e) => setName(e.target.value)}
           autoFocus
         />
-        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode="logo" />
         <div className="flex gap-2">
           <button
             className="flex-1 bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2 text-xs font-medium transition-all active-scale"
@@ -98,7 +98,7 @@ function CompanyRow({ item, onSave, onDelete }: {
       {/* 로고 */}
       {item.image_url ? (
         <div className="w-full max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/20 rounded-apple-sm">
-          <img src={item.image_url} alt={item.name} className="w-full h-auto object-contain" />
+          <img src={item.image_url} alt={item.name} className="w-full h-auto max-h-[60px] min-h-[50px] object-contain" />
         </div>
       ) : (
         <div className="w-full max-h-[60px] min-h-[50px] rounded-apple-sm bg-apple-canvas-parchment border border-apple-hairline flex items-center justify-center mb-1.5">

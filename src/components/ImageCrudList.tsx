@@ -12,11 +12,12 @@ interface Props {
   onCreate: (name: string, imageUrl: string | null) => Promise<void>;
   onUpdate: (id: string, name: string, imageUrl: string | null) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  previewMode?: "logo" | "square";
 }
 
 const inputCls = "w-full bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans";
 
-export default function ImageCrudList({ title, items, onCreate, onUpdate, onDelete }: Props) {
+export default function ImageCrudList({ title, items, onCreate, onUpdate, onDelete, previewMode = "square" }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -39,13 +40,14 @@ export default function ImageCrudList({ title, items, onCreate, onUpdate, onDele
           onUpdate={onUpdate}
           onDelete={onDelete}
           onClose={() => setOpen(false)}
+          previewMode={previewMode}
         />
       )}
     </>
   );
 }
 
-function ImageManageModal({ title, items, onCreate, onUpdate, onDelete, onClose }: Props & { onClose: () => void }) {
+function ImageManageModal({ title, items, onCreate, onUpdate, onDelete, onClose, previewMode }: Props & { onClose: () => void }) {
   const { show } = useToast();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -68,7 +70,7 @@ function ImageManageModal({ title, items, onCreate, onUpdate, onDelete, onClose 
           onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); }}
           autoFocus
         />
-        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode={previewMode} />
         <button
           onClick={handleCreate}
           className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-semibold transition-all active-scale"
@@ -83,6 +85,7 @@ function ImageManageModal({ title, items, onCreate, onUpdate, onDelete, onClose 
               item={it}
               onSave={(n, img) => onUpdate(it.id, n, img)}
               onDelete={() => onDelete(it.id)}
+              previewMode={previewMode}
             />
           ))}
           {items.length === 0 && (
@@ -94,7 +97,7 @@ function ImageManageModal({ title, items, onCreate, onUpdate, onDelete, onClose 
   );
 }
 
-function ImageManageRow({ item, onSave, onDelete }: { item: Item; onSave: (name: string, imageUrl: string | null) => Promise<void>; onDelete: () => Promise<void> }) {
+function ImageManageRow({ item, onSave, onDelete, previewMode }: { item: Item; onSave: (name: string, imageUrl: string | null) => Promise<void>; onDelete: () => Promise<void>; previewMode?: "logo" | "square" }) {
   const { show } = useToast();
   const [edit, setEdit] = useState(false);
   const [name, setName] = useState(item.name);
@@ -148,7 +151,7 @@ function ImageManageRow({ item, onSave, onDelete }: { item: Item; onSave: (name:
       </div>
       {edit && (
         <div className="px-3 pb-2">
-          <ImageUpload value={imageUrl} onChange={setImageUrl} />
+          <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode={previewMode} />
         </div>
       )}
     </li>

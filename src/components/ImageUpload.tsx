@@ -7,9 +7,10 @@ interface Props {
   value: string | null | undefined;
   onChange: (url: string | null) => void;
   label?: string;
+  previewMode?: "logo" | "square";
 }
 
-export default function ImageUpload({ value, onChange, label = "이미지" }: Props) {
+export default function ImageUpload({ value, onChange, label = "이미지", previewMode = "square" }: Props) {
   const { show } = useToast();
   const [uploading, setUploading] = useState(false);
   const [urlDraft, setUrlDraft] = useState("");
@@ -38,7 +39,13 @@ export default function ImageUpload({ value, onChange, label = "이미지" }: Pr
       {value ? (
         <div className="flex items-start gap-3">
           <div className="relative flex-shrink-0">
-            <img src={value} alt="" className="w-16 h-16 object-cover rounded-apple-lg border border-apple-hairline" />
+            {previewMode === "logo" ? (
+              <div className="w-40 max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden bg-white border border-apple-hairline rounded-apple-sm p-1">
+                <img src={value} alt="" className="w-full h-auto max-h-[60px] min-h-[50px] object-contain" />
+              </div>
+            ) : (
+              <img src={value} alt="" className="w-16 h-16 object-cover rounded-apple-lg border border-apple-hairline" />
+            )}
             <button
               type="button"
               className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center transition-all active-scale"
