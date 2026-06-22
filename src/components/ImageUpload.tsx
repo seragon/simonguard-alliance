@@ -33,33 +33,33 @@ export default function ImageUpload({ value, onChange, label = "이미지" }: Pr
   };
 
   return (
-    <div className="space-y-2">
-      <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">{label}</span>
+    <div className="space-y-2 text-left">
+      <span className="block text-xs font-semibold text-apple-ink-muted-80 tracking-tight">{label}</span>
       {value ? (
         <div className="flex items-start gap-3">
           <div className="relative flex-shrink-0">
-            <img src={value} alt="" className="w-16 h-16 object-cover rounded-lg border border-zinc-700" />
+            <img src={value} alt="" className="w-16 h-16 object-cover rounded-apple-lg border border-apple-hairline" />
             <button
               type="button"
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 hover:bg-red-500 text-white rounded-full text-xs flex items-center justify-center transition-colors"
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center transition-all active-scale"
               onClick={() => onChange(null)}
             >
               ×
             </button>
           </div>
-          <p className="text-xs text-zinc-500 mt-1">이미지가 등록됨. 변경하려면 아래에서 새로 선택하세요.</p>
+          <p className="text-xs text-apple-ink-muted-48 mt-1">이미지가 등록되었습니다. 변경하려면 아래에서 새로 선택해 주세요.</p>
         </div>
       ) : null}
       <div className="flex gap-2">
         <button
           type="button"
           disabled={uploading}
-          className="flex items-center gap-1.5 border border-zinc-700 hover:border-zinc-600 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg px-3 py-2 text-xs font-medium transition-colors disabled:opacity-50 flex-shrink-0"
+          className="flex items-center gap-1.5 bg-white hover:bg-apple-canvas-parchment border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink rounded-full px-4 py-2 text-xs font-normal transition-all active-scale disabled:opacity-50 flex-shrink-0"
           onClick={() => fileRef.current?.click()}
         >
           {uploading ? (
             <>
-              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 animate-spin text-apple-primary" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
@@ -67,7 +67,7 @@ export default function ImageUpload({ value, onChange, label = "이미지" }: Pr
             </>
           ) : (
             <>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
               파일 선택
@@ -86,7 +86,7 @@ export default function ImageUpload({ value, onChange, label = "이미지" }: Pr
           }}
         />
         <input
-          className="bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-600 rounded-lg px-3 py-2 text-xs flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 min-w-0"
+          className="bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-full px-4 py-2 text-xs flex-1 focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary min-w-0 transition-all"
           placeholder="또는 이미지 URL 붙여넣기 후 Enter"
           value={urlDraft}
           onChange={(e) => setUrlDraft(e.target.value)}

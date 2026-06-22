@@ -46,7 +46,7 @@ export default function BrandModuleTab() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-zinc-600 px-1">브랜드를 추가하세요.</p>
+          <p className="text-sm text-apple-ink-muted-48 px-1">브랜드를 추가하세요.</p>
         )}
       </div>
 
@@ -81,7 +81,7 @@ export default function BrandModuleTab() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-zinc-600 px-1">소파 모델을 추가하세요.</p>
+              <p className="text-sm text-apple-ink-muted-48 px-1">소파 모델을 추가하세요.</p>
             )}
           </>
         ) : (

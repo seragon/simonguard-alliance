@@ -16,15 +16,15 @@ export default function Modal({ title, onClose, children }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-sm bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
-          <h3 className="text-sm font-semibold text-zinc-100">{title}</h3>
+      <div className="w-full max-w-sm bg-white border border-apple-hairline rounded-apple-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-apple-hairline">
+          <h3 className="text-sm font-semibold text-apple-ink tracking-tight">{title}</h3>
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment transition-all active-scale"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

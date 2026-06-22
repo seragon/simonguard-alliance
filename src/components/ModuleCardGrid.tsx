@@ -20,10 +20,10 @@ export default function ModuleCardGrid({ items, onCreate, onUpdate, onDelete }: 
   return (
     <div className="space-y-4">
       {/* 추가 폼 */}
-      <div className="bg-zinc-800/50 border border-zinc-700/60 rounded-xl p-4 space-y-3">
-        <p className="text-xs font-semibold text-zinc-400">모듈 추가</p>
+      <div className="bg-white border border-apple-hairline rounded-apple-lg p-5 space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+        <p className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider mb-1">모듈 추가</p>
         <input
-          className="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+          className="w-full bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans"
           placeholder="모듈 이름 입력"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -31,7 +31,7 @@ export default function ModuleCardGrid({ items, onCreate, onUpdate, onDelete }: 
         <ImageUpload value={imageUrl} onChange={setImageUrl} />
         <button
           type="button"
-          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-2.5 text-sm font-medium transition-colors"
+          className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-semibold transition-all active-scale"
           onClick={async () => {
             if (!name.trim()) return;
             try {
@@ -50,11 +50,11 @@ export default function ModuleCardGrid({ items, onCreate, onUpdate, onDelete }: 
 
       {/* 카드 그리드: 모바일 2열 / PC 3열 */}
       {items.length === 0 ? (
-        <div className="flex items-center justify-center h-24 border border-dashed border-zinc-800 rounded-xl">
-          <p className="text-sm text-zinc-600">모듈이 없습니다.</p>
+        <div className="flex items-center justify-center h-24 border border-dashed border-apple-hairline rounded-apple-lg bg-white">
+          <p className="text-xs text-apple-ink-muted-48">모듈이 없습니다.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
           {items.map((it) => (
             <ModuleCard
               key={it.id}
@@ -84,9 +84,9 @@ function ModuleCard({
   const [imageUrl, setImageUrl] = useState<string | null>(item.image_url ?? null);
 
   return (
-    <div className="bg-zinc-800/50 border border-zinc-700/60 rounded-xl overflow-hidden flex flex-col">
+    <div className="bg-white border border-apple-hairline rounded-apple-lg overflow-hidden flex flex-col shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
       {/* 이미지 영역 */}
-      <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+      <div className="aspect-square bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
         {item.image_url && !edit ? (
           <img
             src={item.image_url}
@@ -94,26 +94,26 @@ function ModuleCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
           </svg>
         )}
       </div>
 
       {/* 이름 + 버튼 영역 */}
-      <div className="p-2 flex flex-col gap-1.5">
+      <div className="p-3 flex flex-col gap-2.5 bg-white border-t border-apple-hairline">
         {edit ? (
           <>
             <input
-              className="bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-lg px-2 py-1.5 text-xs w-full focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              className="bg-white border border-apple-hairline text-apple-ink rounded-full px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-2 focus:ring-apple-primary/20"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
             />
             <ImageUpload value={imageUrl} onChange={setImageUrl} />
-            <div className="flex gap-1">
+            <div className="flex gap-1.5">
               <button
-                className="flex-1 text-xs bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 rounded-lg py-1 transition-colors hover:bg-emerald-600/30"
+                className="flex-1 text-xs bg-apple-primary border border-apple-primary text-white rounded-full py-1.5 transition-all active-scale font-semibold"
                 onClick={async () => {
                   try { await onSave(name.trim(), imageUrl); setEdit(false); show("수정됨"); }
                   catch (e) { show((e as Error).message ?? "오류", "error"); }
@@ -122,7 +122,7 @@ function ModuleCard({
                 저장
               </button>
               <button
-                className="flex-1 text-xs text-zinc-500 border border-zinc-700 rounded-lg py-1 transition-colors hover:text-zinc-300"
+                className="flex-1 text-xs border border-apple-hairline hover:border-zinc-300 text-apple-ink-muted-80 hover:text-apple-ink bg-white rounded-full py-1.5 transition-all active-scale"
                 onClick={() => { setEdit(false); setName(item.name); setImageUrl(item.image_url ?? null); }}
               >
                 취소
@@ -131,16 +131,16 @@ function ModuleCard({
           </>
         ) : (
           <>
-            <p className="text-xs text-zinc-200 text-center font-medium truncate">{item.name}</p>
-            <div className="flex gap-1">
+            <p className="text-xs text-apple-ink text-center font-semibold truncate">{item.name}</p>
+            <div className="flex gap-1.5">
               <button
-                className="flex-1 text-xs text-zinc-500 border border-zinc-700 rounded-lg py-1 hover:text-zinc-300 transition-colors"
+                className="flex-1 text-xs border border-apple-hairline hover:border-zinc-300 bg-white text-apple-ink-muted-80 hover:text-apple-ink rounded-full py-1.5 transition-all active-scale"
                 onClick={() => setEdit(true)}
               >
                 수정
               </button>
               <button
-                className="flex-1 text-xs text-red-500 border border-red-900/40 rounded-lg py-1 hover:text-red-400 transition-colors"
+                className="flex-1 text-xs border border-red-200 bg-white hover:bg-red-50 text-red-500 rounded-full py-1.5 transition-all active-scale font-medium"
                 onClick={async () => {
                   if (!confirm("삭제할까요?")) return;
                   try { await onDelete(); show("삭제됨"); }
