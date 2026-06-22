@@ -105,7 +105,7 @@ function ImageManageRow({ item, onSave, onDelete }: { item: Item; onSave: (name:
       <div className="flex items-center gap-3 px-3 py-2.5">
         {!edit && (item.image_url ? (
           <div className="w-10 aspect-[2/1] flex items-center justify-center overflow-hidden flex-shrink-0 border border-apple-hairline bg-white">
-            <img src={item.image_url} alt="" className="w-full h-auto object-contain mix-blend-multiply" />
+            <img src={item.image_url} alt="" className="w-full h-auto object-contain" />
           </div>
         ) : (
           <div className="w-10 aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center flex-shrink-0">

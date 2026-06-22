@@ -30,14 +30,14 @@ export default function BrandModuleTab() {
           />
         </div>
         {(brands.data ?? []).length > 0 ? (
-          <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {(brands.data ?? []).map((b) => (
               <button
                 key={b.id}
                 onClick={() => { setBrandId(b.id); setModelId(undefined); }}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${
+                className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
                   brandId === b.id
-                    ? "bg-apple-primary border-apple-primary text-white"
+                    ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
                     : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
                 }`}
               >
@@ -65,14 +65,14 @@ export default function BrandModuleTab() {
               />
             </div>
             {(models.data ?? []).length > 0 ? (
-              <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {(models.data ?? []).map((m) => (
                   <button
                     key={m.id}
                     onClick={() => setModelId(m.id)}
-                    className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
                       modelId === m.id
-                        ? "bg-apple-primary border-apple-primary text-white"
+                        ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
                         : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
                     }`}
                   >

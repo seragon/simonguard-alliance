@@ -59,7 +59,7 @@ export default function FabricTab() {
               >
                 {c.image_url ? (
                   <div className="w-full aspect-[2/1] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30">
-                    <img src={c.image_url} alt="" className="w-full h-auto object-contain mix-blend-multiply" />
+                    <img src={c.image_url} alt="" className="w-full h-auto object-contain" />
                   </div>
                 ) : (
                   <div className="w-full aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5">
@@ -104,7 +104,7 @@ export default function FabricTab() {
                       {/* 원단명 헤더 */}
                       <div className="flex items-center gap-3 px-3 py-2.5 bg-apple-canvas-parchment/60 border-b border-apple-hairline">
                         {sample?.image_url ? (
-                          <img src={sample.image_url} alt="" className="w-7 h-7 object-cover rounded-md border border-apple-hairline flex-shrink-0 mix-blend-multiply" />
+                          <img src={sample.image_url} alt="" className="w-7 h-7 object-cover rounded-md border border-apple-hairline flex-shrink-0" />
                         ) : (
                           <div className="w-7 h-7 rounded-md bg-apple-canvas border border-apple-hairline flex-shrink-0" />
                         )}
@@ -116,7 +116,7 @@ export default function FabricTab() {
                         {colors.map((f) => (
                           <div key={f.id} className="flex flex-col items-center gap-1">
                             {f.image_url ? (
-                              <img src={f.image_url} alt={f.color} className="w-full aspect-square object-cover rounded-apple-lg border border-apple-hairline mix-blend-multiply" />
+                              <img src={f.image_url} alt={f.color} className="w-full aspect-square object-cover rounded-apple-lg border border-apple-hairline" />
                             ) : (
                               <div className="w-full aspect-square rounded-apple-lg bg-apple-canvas border border-apple-hairline" />
                             )}
@@ -256,7 +256,7 @@ function FabricColorRow({ fabric, existingNames, onSave, onDelete }: {
         ) : (
           <>
             {fabric.image_url ? (
-              <img src={fabric.image_url} alt={fabric.color} className="w-10 h-10 object-cover rounded-apple-lg border border-apple-hairline flex-shrink-0 mix-blend-multiply" />
+              <img src={fabric.image_url} alt={fabric.color} className="w-10 h-10 object-cover rounded-apple-lg border border-apple-hairline flex-shrink-0" />
             ) : (
               <div className="w-10 h-10 rounded-apple-lg bg-apple-canvas border border-apple-hairline flex-shrink-0" />
             )}

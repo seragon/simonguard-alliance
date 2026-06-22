@@ -106,7 +106,7 @@ export default function OrderDetailPage() {
               <img
                 src={o.fabric_image_url}
                 alt="원단 이미지"
-                className="w-32 h-32 object-cover rounded-apple-lg border border-apple-hairline mix-blend-multiply"
+                className="w-32 h-32 object-cover rounded-apple-lg border border-apple-hairline"
               />
             )}
             <span className="text-sm text-apple-ink font-medium text-right">{o.fabric_label}</span>
@@ -140,7 +140,7 @@ export default function OrderDetailPage() {
                   <img
                     src={it.image_url}
                     alt={it.module_name}
-                    className="w-full h-full object-cover mix-blend-multiply"
+                    className="w-full h-full object-cover"
                     style={it.flipped ? { transform: "scaleX(-1)" } : undefined}
                   />
                 ) : (

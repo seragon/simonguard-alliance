@@ -23,9 +23,9 @@ function TabButton({ selected, onClick, children }: { selected: boolean; onClick
     <button
       type="button"
       onClick={onClick}
-      className={`flex-shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${
+      className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
         selected
-          ? "bg-apple-primary border-apple-primary text-white"
+          ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
           : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
       }`}
     >
@@ -130,7 +130,7 @@ export default function OrderFormPage() {
           <label className={labelCls}>브랜드</label>
           {(brands.data ?? []).length === 0
             ? <p className="text-sm text-apple-ink-muted-48">브랜드 데이터가 없습니다.</p>
-            : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+            : <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {(brands.data ?? []).map((b) => (
                   <TabButton key={b.id} selected={brandId === b.id} onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); setFlip({}); }}>
                     {b.name}
@@ -146,7 +146,7 @@ export default function OrderFormPage() {
             <label className={labelCls}>모델</label>
             {(models.data ?? []).length === 0
               ? <p className="text-sm text-apple-ink-muted-48">모델 데이터가 없습니다.</p>
-              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+              : <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   {(models.data ?? []).map((m) => (
                     <TabButton key={m.id} selected={modelId === m.id} onClick={() => { setModelId(m.id); setQty({}); setFlip({}); }}>
                       {m.name}
@@ -179,7 +179,7 @@ export default function OrderFormPage() {
                         <img
                           src={m.image_url}
                           alt={m.name}
-                          className="w-full h-full object-cover transition-transform duration-200 mix-blend-multiply"
+                          className="w-full h-full object-cover transition-transform duration-200"
                           style={flip[m.id] ? { transform: "scaleX(-1)" } : undefined}
                         />
                       ) : (
@@ -225,12 +225,31 @@ export default function OrderFormPage() {
           <label className={labelCls}>원단회사</label>
             {(fabricCompanies.data ?? []).length === 0
               ? <p className="text-sm text-apple-ink-muted-48">원단회사 데이터가 없습니다.</p>
-              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+              : <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   {(fabricCompanies.data ?? []).map((c) => (
-                    <TabButton key={c.id} selected={companyFabricId === c.id} onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}>
-                      {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded-full flex-shrink-0 mix-blend-multiply" />}
-                      {c.name}
-                    </TabButton>
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}
+                      className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
+                        companyFabricId === c.id
+                          ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
+                          : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
+                      }`}
+                    >
+                      {c.image_url ? (
+                        <div className="w-full aspect-[2/1] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30">
+                          <img src={c.image_url} alt="" className="w-full h-auto object-contain" />
+                        </div>
+                      ) : (
+                        <div className="w-full aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5">
+                          <svg className="w-4 h-4 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                          </svg>
+                        </div>
+                      )}
+                      <span className="truncate w-full text-[11px]">{c.name}</span>
+                    </button>
                   ))}
                 </div>
             }
@@ -257,7 +276,7 @@ export default function OrderFormPage() {
                   >
                     <div className="aspect-square bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
                       {f.image_url ? (
-                        <img src={f.image_url} alt={f.name} className="w-full h-full object-cover mix-blend-multiply" />
+                        <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
                       ) : (
                         <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
@@ -282,11 +301,31 @@ export default function OrderFormPage() {
           <label className={labelCls}>발주회사</label>
             {(orderCompanies.data ?? []).length === 0
               ? <p className="text-sm text-apple-ink-muted-48">발주회사 데이터가 없습니다.</p>
-              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+              : <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {(orderCompanies.data ?? []).map((c) => (
-                  <TabButton key={c.id} selected={orderCompanyId === c.id} onClick={() => setOrderCompanyId(c.id)}>
-                    {c.name}
-                  </TabButton>
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setOrderCompanyId(c.id)}
+                    className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
+                      orderCompanyId === c.id
+                        ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
+                        : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
+                    }`}
+                  >
+                    {c.image_url ? (
+                      <div className="w-full aspect-[2/1] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30">
+                        <img src={c.image_url} alt="" className="w-full h-auto object-contain" />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5">
+                        <svg className="w-4 h-4 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                        </svg>
+                      </div>
+                    )}
+                    <span className="truncate w-full text-[11px]">{c.name}</span>
+                  </button>
                 ))}
               </div>
           }
@@ -297,13 +336,13 @@ export default function OrderFormPage() {
         </div>
         <div>
           <label className={labelCls}>상태</label>
-          <div className="flex gap-1.5 overflow-x-auto pb-1">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {ALL_STATUSES.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setStatus(s)}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-normal transition-all active-scale whitespace-nowrap border ${
+                className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
                   status === s ? statusBadge(s) : "text-apple-ink-muted-80 border-apple-hairline bg-white hover:text-apple-ink hover:bg-apple-canvas-parchment"
                 }`}
               >
