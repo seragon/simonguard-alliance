@@ -54,8 +54,8 @@ export default function AdminPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-zinc-100">어드민</h2>
-        <p className="text-sm text-zinc-500 mt-0.5">마스터 데이터 및 계정을 관리합니다.</p>
+        <h2 className="text-xl font-bold text-apple-ink tracking-tight">어드민</h2>
+        <p className="text-sm text-apple-ink-muted-48 mt-0.5">마스터 데이터 및 계정을 관리합니다.</p>
       </div>
 
       {/* 탭: 모바일 화면에서 가로 스크롤 없이 자연스럽게 줄바꿈되도록 flex-wrap 적용 */}
@@ -64,10 +64,10 @@ export default function AdminPage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${
               tab === t.key
-                ? "bg-indigo-600 text-white"
-                : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700"
+                ? "bg-apple-primary border-apple-primary text-white"
+                : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
             }`}
           >
             {t.icon}
@@ -77,7 +77,7 @@ export default function AdminPage() {
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+      <div className="bg-white border border-apple-hairline rounded-apple-lg p-5 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
         {TABS.find((t) => t.key === tab)?.el}
       </div>
     </div>
