@@ -1,15 +1,9 @@
 // 반응형 앱 셸: 상단 헤더 + 모바일 하단 탭/데스크톱 상단 메뉴
-import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 
 export default function AppLayout() {
-  const { isSuperAdmin, signOut } = useAuth();
-  const nav = useNavigate();
-
-  async function handleLogout() {
-    await signOut();
-    nav("/login");
-  }
+  const { isSuperAdmin } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-apple-canvas-parchment">
@@ -53,12 +47,16 @@ export default function AppLayout() {
               어드민
             </NavLink>
           )}
-          <button
-            onClick={handleLogout}
-            className="ml-1 px-3 py-1 rounded-full text-xs font-normal tracking-tight text-zinc-400 hover:text-zinc-100 transition-colors active-scale"
+          <NavLink
+            to="/account"
+            className={({ isActive }) =>
+              `ml-1 px-3 py-1 rounded-full text-xs font-normal tracking-tight transition-colors active-scale ${
+                isActive ? "bg-zinc-900 text-white" : "text-zinc-400 hover:text-zinc-100"
+              }`
+            }
           >
-            로그아웃
-          </button>
+            계정
+          </NavLink>
         </nav>
       </header>
 
@@ -99,15 +97,19 @@ export default function AppLayout() {
             어드민
           </NavLink>
         )}
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center gap-0.5 px-6 py-1.5 rounded-lg text-[10px] tracking-tight text-apple-ink-muted-80 font-normal transition-colors active-scale"
+        <NavLink
+          to="/account"
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-0.5 px-6 py-1.5 rounded-lg text-[10px] tracking-tight transition-colors active-scale ${
+              isActive ? "text-apple-primary font-medium" : "text-apple-ink-muted-80 font-normal"
+            }`
+          }
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          로그아웃
-        </button>
+          계정
+        </NavLink>
       </nav>
     </div>
   );

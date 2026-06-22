@@ -132,9 +132,29 @@ export default function OrderFormPage() {
             ? <p className="text-sm text-apple-ink-muted-48">브랜드 데이터가 없습니다.</p>
             : <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {(brands.data ?? []).map((b) => (
-                  <TabButton key={b.id} selected={brandId === b.id} onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); setFlip({}); }}>
-                    {b.name}
-                  </TabButton>
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); setFlip({}); }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${
+                      brandId === b.id
+                        ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
+                        : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
+                    }`}
+                  >
+                    {b.image_url ? (
+                      <div className="w-full aspect-[2/1] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30 rounded-sm">
+                        <img src={b.image_url} alt="" className="w-full h-auto object-contain mix-blend-multiply" />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5 rounded-sm">
+                        <svg className="w-4 h-4 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                        </svg>
+                      </div>
+                    )}
+                    <span className="truncate w-full text-[11px]">{b.name}</span>
+                  </button>
                 ))}
               </div>
           }

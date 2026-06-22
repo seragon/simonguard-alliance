@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage";
 import OrderFormPage from "./pages/OrderFormPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import AdminPage from "./pages/AdminPage";
+import AccountPage from "./pages/AccountPage";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/orders/:id" element={<OrderDetailPage />} />
         <Route path="/orders/:id/edit" element={<OrderFormPage />} />
         <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+        <Route path="/account" element={<AccountPage />} />
       </Route>
     </Routes>
   );

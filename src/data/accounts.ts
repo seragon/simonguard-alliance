@@ -20,7 +20,14 @@ export function useCreateAccount() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { username: string; password: string; name: string; role: "super_admin" | "user" }) => {
-      const { data, error } = await supabase.functions.invoke("create-user", { body: input });
+      const body = {
+        username: input.username.trim(),
+        email: `${input.username.trim()}@simonguard.local`,
+        password: input.password,
+        name: input.name,
+        role: input.role,
+      };
+      const { data, error } = await supabase.functions.invoke("create-user", { body });
       if (error) throw error;
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
     },
