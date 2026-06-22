@@ -179,7 +179,7 @@ export default function OrderFormPage() {
                         <img
                           src={m.image_url}
                           alt={m.name}
-                          className="w-full h-full object-cover transition-transform duration-200"
+                          className="w-full h-full object-cover transition-transform duration-200 mix-blend-multiply"
                           style={flip[m.id] ? { transform: "scaleX(-1)" } : undefined}
                         />
                       ) : (
@@ -228,7 +228,7 @@ export default function OrderFormPage() {
               : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
                   {(fabricCompanies.data ?? []).map((c) => (
                     <TabButton key={c.id} selected={companyFabricId === c.id} onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}>
-                      {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded-full flex-shrink-0" />}
+                      {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded-full flex-shrink-0 mix-blend-multiply" />}
                       {c.name}
                     </TabButton>
                   ))}
@@ -257,7 +257,7 @@ export default function OrderFormPage() {
                   >
                     <div className="aspect-square bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
                       {f.image_url ? (
-                        <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
+                        <img src={f.image_url} alt={f.name} className="w-full h-full object-cover mix-blend-multiply" />
                       ) : (
                         <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />

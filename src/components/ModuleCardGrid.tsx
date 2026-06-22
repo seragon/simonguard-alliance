@@ -91,7 +91,7 @@ function ModuleCard({
           <img
             src={item.image_url}
             alt={item.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover mix-blend-multiply"
           />
         ) : (
           <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
