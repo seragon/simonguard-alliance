@@ -98,6 +98,7 @@ export default function BrandModuleTab() {
   const [modelId, setModelId] = useState<string>();
   const [newBrandName, setNewBrandName] = useState("");
   const [newBrandImage, setNewBrandImage] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
   const brands = useBrands();
   const models = useSofaModels(brandId);
   const modules = useModules(modelId);
@@ -118,14 +119,27 @@ export default function BrandModuleTab() {
     <div className="flex flex-col gap-6">
       {/* 브랜드 */}
       <div className="space-y-2">
-        <p className="text-xs text-apple-ink-muted-80 font-semibold tracking-tight">브랜드</p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-apple-ink-muted-80 font-semibold tracking-tight">브랜드</p>
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-apple-canvas-parchment border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink rounded-full text-xs font-normal transition-all active-scale"
+          >
+            <svg className={`w-3 h-3 transition-transform ${showAddForm ? "rotate-45" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            {showAddForm ? "닫기" : "브랜드 추가"}
+          </button>
+        </div>
 
         {/* 추가 폼 */}
-        <div className="bg-white border border-apple-hairline rounded-apple-lg p-4 space-y-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
-          <input className={inputCls} placeholder="브랜드 이름 입력" value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
-          <ImageUpload value={newBrandImage} onChange={setNewBrandImage} previewMode="logo" />
-          <button onClick={handleCreateBrand} className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale">추가</button>
-        </div>
+        {showAddForm && (
+          <div className="bg-white border border-apple-hairline rounded-apple-lg p-4 space-y-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+            <input className={inputCls} placeholder="브랜드 이름 입력" value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
+            <ImageUpload value={newBrandImage} onChange={setNewBrandImage} previewMode="logo" />
+            <button onClick={handleCreateBrand} className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale">추가</button>
+          </div>
+        )}
 
         {(brands.data ?? []).length > 0 ? (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
