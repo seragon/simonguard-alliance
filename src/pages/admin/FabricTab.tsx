@@ -47,18 +47,26 @@ export default function FabricTab() {
           />
         </div>
         {(companies.data ?? []).length > 0 ? (
-          <div className="flex gap-1.5 overflow-x-auto pb-1">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {(companies.data ?? []).map((c) => (
               <button
                 key={c.id}
                 onClick={() => { setCompanyId(c.id); setFabricModalOpen(false); }}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${companyId === c.id
-                    ? "bg-apple-primary border-apple-primary text-white"
+                className={`flex flex-col items-center justify-center p-3 rounded-apple-lg text-xs font-semibold tracking-tight transition-all active-scale border text-center ${companyId === c.id
+                    ? "bg-apple-primary/5 border-apple-primary text-apple-primary"
                     : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
                   }`}
               >
-                {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded-full flex-shrink-0" />}
-                {c.name}
+                {c.image_url ? (
+                  <img src={c.image_url} alt="" className="w-10 h-10 object-cover rounded-full mb-1 flex-shrink-0 border border-apple-hairline/10" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1 flex-shrink-0">
+                    <svg className="w-4 h-4 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                    </svg>
+                  </div>
+                )}
+                <span className="truncate w-full text-[11px]">{c.name}</span>
               </button>
             ))}
           </div>
