@@ -13,6 +13,7 @@ export default function OrderCompanyTab() {
   const c = useCreate("order_companies"), u = useUpdate("order_companies"), d = useDelete("order_companies");
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   async function handleCreate() {
     if (!name.trim()) return;
@@ -24,20 +25,33 @@ export default function OrderCompanyTab() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider mb-2">발주회사</h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider">발주회사</h3>
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-apple-canvas-parchment border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink rounded-full text-xs font-normal transition-all active-scale"
+        >
+          <svg className={`w-3 h-3 transition-transform ${showAddForm ? "rotate-45" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          {showAddForm ? "닫기" : "발주회사 추가"}
+        </button>
+      </div>
 
       {/* 추가 폼 */}
-      <div className="bg-white border border-apple-hairline rounded-apple-lg p-5 space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
-        <div>
-          <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">발주회사 이름</label>
-          <input className={inputCls} placeholder="발주회사 이름 입력" value={name} onChange={(e) => setName(e.target.value)} />
+      {showAddForm && (
+        <div className="bg-white border border-apple-hairline rounded-apple-lg p-5 space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+          <div>
+            <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">발주회사 이름</label>
+            <input className={inputCls} placeholder="발주회사 이름 입력" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode="logo" />
+          <button
+            onClick={handleCreate}
+            className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale"
+          >추가</button>
         </div>
-        <ImageUpload value={imageUrl} onChange={setImageUrl} previewMode="logo" />
-        <button
-          onClick={handleCreate}
-          className="w-full bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full py-2.5 text-sm font-medium transition-all active-scale"
-        >추가</button>
-      </div>
+      )}
 
       {/* 목록: 반응형 그리드 밸런스 개선 */}
       {(list.data ?? []).length === 0 ? (
