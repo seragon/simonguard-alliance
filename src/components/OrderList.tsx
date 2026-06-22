@@ -12,6 +12,8 @@ export default function OrderList() {
   const [companyId, setCompanyId] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // 필터 영역 접힘/열림 상태 관리
+  
   const brands = useBrands();
   const companies = useOrderCompanies();
   const orders = useOrders({
@@ -22,12 +24,34 @@ export default function OrderList() {
     to: to || undefined,
   });
 
+  // 필터가 하나라도 적용되어 있는지 여부 계산
+  const hasActiveFilters = !!(status || brandId || companyId || from || to);
+
   const sel = "bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500";
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-zinc-100">발주 리스트</h2>
+        <div className="flex items-center gap-2.5">
+          <h2 className="font-semibold text-zinc-100">발주 리스트</h2>
+          {/* 필터 토글 버튼: 필터가 열려있거나 필터링이 활성화되어 있을 때 상태를 직관적으로 표현 */}
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+              isFilterOpen || hasActiveFilters
+                ? "bg-indigo-600/10 border-indigo-500/30 text-indigo-400"
+                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+            </svg>
+            필터 검색
+            {hasActiveFilters && (
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            )}
+          </button>
+        </div>
         <Link
           to="/orders/new"
           className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-2 text-sm font-medium transition-colors"
@@ -39,22 +63,28 @@ export default function OrderList() {
         </Link>
       </div>
 
-      {/* 필터 */}
-      <div className="flex flex-wrap gap-2">
-        <select className={sel} value={status} onChange={(e) => setStatus(e.target.value as OrderStatus | "")}>
-          <option value="">상태 전체</option>
-          {ALL_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
-        </select>
-        <select className={sel} value={brandId} onChange={(e) => setBrandId(e.target.value)}>
-          <option value="">브랜드 전체</option>
-          {(brands.data ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-        </select>
-        <select className={sel} value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
-          <option value="">발주처 전체</option>
-          {(companies.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <input type="date" className={sel} value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input type="date" className={sel} value={to} onChange={(e) => setTo(e.target.value)} />
+      {/* 필터 영역: 검색 토글 상태에 따라 슬라이드 다운 애니메이션 제공 */}
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isFilterOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="flex flex-wrap gap-2 pb-2">
+          <select className={sel} value={status} onChange={(e) => setStatus(e.target.value as OrderStatus | "")}>
+            <option value="">상태 전체</option>
+            {ALL_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
+          </select>
+          <select className={sel} value={brandId} onChange={(e) => setBrandId(e.target.value)}>
+            <option value="">브랜드 전체</option>
+            {(brands.data ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+          </select>
+          <select className={sel} value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
+            <option value="">발주처 전체</option>
+            {(companies.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <input type="date" className={sel} value={from} onChange={(e) => setFrom(e.target.value)} />
+          <input type="date" className={sel} value={to} onChange={(e) => setTo(e.target.value)} />
+        </div>
       </div>
 
       {/* 리스트 */}
