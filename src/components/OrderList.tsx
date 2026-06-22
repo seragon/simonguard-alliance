@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useOrders } from "../data/orders";
 import { useBrands, useOrderCompanies } from "../data/masterData";
-import { ALL_STATUSES, statusLabel, statusColor, statusBadge } from "../domain/status";
+import { ALL_STATUSES, statusLabel, statusBadge } from "../domain/status";
 import type { OrderStatus } from "../types/db";
 
 export default function OrderList() {
@@ -27,20 +27,21 @@ export default function OrderList() {
   // 필터가 하나라도 적용되어 있는지 여부 계산
   const hasActiveFilters = !!(status || brandId || companyId || from || to);
 
-  const sel = "bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500";
+  // Apple 캡슐형 입력 폼 스타일
+  const sel = "bg-white border border-apple-hairline text-apple-ink rounded-full px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans";
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <h2 className="font-semibold text-zinc-100">발주 리스트</h2>
-          {/* 필터 토글 버튼: 필터가 열려있거나 필터링이 활성화되어 있을 때 상태를 직관적으로 표현 */}
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-apple-ink tracking-tight">발주 리스트</h2>
+          {/* 필터 토글 버튼: Apple capsule button 형상 적용 */}
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-normal transition-all border active-scale ${
               isFilterOpen || hasActiveFilters
-                ? "bg-indigo-600/10 border-indigo-500/30 text-indigo-400"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                ? "bg-apple-primary/10 border-apple-primary/30 text-apple-primary"
+                : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:border-zinc-300"
             }`}
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -48,15 +49,16 @@ export default function OrderList() {
             </svg>
             필터 검색
             {hasActiveFilters && (
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-apple-primary animate-pulse" />
             )}
           </button>
         </div>
+        {/* 발주 등록: Action Blue pill CTA 버튼 */}
         <Link
           to="/orders/new"
-          className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-1.5 bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full px-4 py-2 text-xs font-medium transition-all active-scale"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
           발주 등록
@@ -66,7 +68,7 @@ export default function OrderList() {
       {/* 필터 영역: 검색 토글 상태에 따라 슬라이드 다운 애니메이션 제공 */}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          isFilterOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+          isFilterOpen ? "max-h-60 opacity-100 mb-2" : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
         <div className="flex flex-wrap gap-2 pb-2">
@@ -87,28 +89,38 @@ export default function OrderList() {
         </div>
       </div>
 
-      {/* 리스트 */}
-      <ul className="divide-y divide-zinc-800 border border-zinc-800 rounded-xl overflow-hidden">
+      {/* 리스트: Apple Store Utility Card 감성의 2열 그리드 구조 */}
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {(orders.data ?? []).map((o) => (
-          <li key={o.id}>
+          <li key={o.id} className="bg-apple-canvas border border-apple-hairline rounded-apple-lg transition-all duration-200 hover:border-apple-primary/30 active-scale shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
             <Link
               to={`/orders/${o.id}`}
-              className="flex items-center gap-3 px-4 py-3.5 hover:bg-zinc-800/50 transition-colors"
+              className="flex flex-col justify-between p-4 h-full min-h-[100px]"
             >
-              <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusColor(o.status)}`} />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-zinc-100 truncate">{o.brand_name} {o.model_name}</p>
-                <p className="text-xs text-zinc-500 truncate mt-0.5">{o.order_company_name} · 납기 {o.due_date}</p>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-[15px] text-apple-ink tracking-tight truncate">{o.brand_name} {o.model_name}</p>
+                  <p className="text-xs text-apple-ink-muted-80 font-normal mt-1 truncate">{o.order_company_name}</p>
+                </div>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold tracking-tight flex-shrink-0 ${statusBadge(o.status)}`}>
+                  {statusLabel(o.status)}
+                </span>
               </div>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${statusBadge(o.status)}`}>
-                {statusLabel(o.status)}
-              </span>
+              <div className="flex items-center justify-between border-t border-apple-divider-soft mt-3.5 pt-2.5 text-[11px] text-apple-ink-muted-48">
+                <span>납기 {o.due_date}</span>
+                <span className="text-apple-primary font-medium inline-flex items-center gap-0.5">
+                  상세보기
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </span>
+              </div>
             </Link>
           </li>
         ))}
         {orders.data?.length === 0 && (
-          <li className="px-4 py-10 text-center">
-            <p className="text-zinc-600 text-sm">발주가 없습니다.</p>
+          <li className="col-span-full bg-apple-canvas border border-apple-hairline rounded-apple-lg py-12 text-center">
+            <p className="text-apple-ink-muted-48 text-sm">등록된 발주가 없습니다.</p>
           </li>
         )}
       </ul>

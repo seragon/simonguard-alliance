@@ -12,7 +12,7 @@ interface Props {
   onDelete: (id: string) => Promise<void>;
 }
 
-const inputCls = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors";
+const inputCls = "w-full bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans";
 
 export default function CrudList({ title, items, onCreate, onUpdate, onDelete }: Props) {
   const [open, setOpen] = useState(false);
@@ -21,9 +21,9 @@ export default function CrudList({ title, items, onCreate, onUpdate, onDelete }:
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 rounded-lg text-xs font-medium transition-colors"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-apple-canvas-parchment border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink rounded-full text-xs font-normal transition-all active-scale"
       >
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
         </svg>
         {title} 관리
@@ -67,17 +67,17 @@ function ManageModal({ title, items, onCreate, onUpdate, onDelete, onClose }: Pr
         />
         <button
           onClick={handleCreate}
-          className="flex-shrink-0 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors"
+          className="flex-shrink-0 px-4 bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full text-sm font-medium transition-all active-scale"
         >추가</button>
       </div>
 
-      {/* 목록 */}
-      <ul className="divide-y divide-zinc-800 border border-zinc-800 rounded-xl overflow-hidden max-h-72 overflow-y-auto">
+      {/* 목록: Apple hairline border 및 둥글기 적용 */}
+      <ul className="divide-y divide-apple-divider-soft border border-apple-hairline rounded-apple-lg overflow-hidden max-h-72 overflow-y-auto bg-white mt-4">
         {items.map((it) => (
           <ManageRow key={it.id} item={it} onSave={(n) => onUpdate(it.id, n)} onDelete={() => onDelete(it.id)} />
         ))}
         {items.length === 0 && (
-          <li className="px-4 py-4 text-center text-sm text-zinc-600">항목이 없습니다.</li>
+          <li className="px-4 py-4 text-center text-sm text-apple-ink-muted-48">항목이 없습니다.</li>
         )}
       </ul>
     </Modal>
@@ -90,31 +90,31 @@ function ManageRow({ item, onSave, onDelete }: { item: Item; onSave: (n: string)
   const [v, setV] = useState(item.name);
 
   return (
-    <li className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900 hover:bg-zinc-800/50 transition-colors">
+    <li className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-apple-canvas-parchment transition-colors">
       {edit ? (
         <input
-          className="bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-lg px-2 py-1 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="bg-white border border-apple-hairline text-apple-ink rounded-full px-3 py-1 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-apple-primary/20"
           value={v}
           onChange={(e) => setV(e.target.value)}
           autoFocus
         />
       ) : (
-        <span className="flex-1 text-sm text-zinc-200">{item.name}</span>
+        <span className="flex-1 text-sm text-apple-ink font-normal">{item.name}</span>
       )}
       {edit ? (
         <>
-          <button className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+          <button className="text-xs text-apple-primary font-semibold hover:opacity-80 transition-opacity"
             onClick={async () => {
               try { await onSave(v.trim()); setEdit(false); show("수정됨"); }
               catch (e) { show((e as Error).message ?? "오류", "error"); }
             }}>저장</button>
-          <button className="text-xs text-zinc-500 hover:text-zinc-400 transition-colors"
+          <button className="text-xs text-apple-ink-muted-80 hover:text-apple-ink transition-colors"
             onClick={() => { setEdit(false); setV(item.name); }}>취소</button>
         </>
       ) : (
-        <button className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors" onClick={() => setEdit(true)}>수정</button>
+        <button className="text-xs text-apple-primary font-medium hover:opacity-80 transition-opacity" onClick={() => setEdit(true)}>수정</button>
       )}
-      <button className="text-xs text-red-500 hover:text-red-400 transition-colors"
+      <button className="text-xs text-red-600 font-medium hover:opacity-80 transition-opacity"
         onClick={async () => {
           if (!confirm("삭제할까요?")) return;
           try { await onDelete(); show("삭제됨"); }

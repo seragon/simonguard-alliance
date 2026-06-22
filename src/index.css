@@ -4,14 +4,23 @@
 
 @layer base {
   body {
-    @apply bg-zinc-950 text-zinc-100 antialiased;
+    @apply bg-apple-canvas-parchment text-apple-ink font-sans antialiased;
   }
 
+  /* 라이트 모드에 맞게 날짜 선택 아이콘 필터 복원 */
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.7);
+    filter: none;
   }
 
   select option {
-    @apply bg-zinc-800 text-zinc-100;
+    @apply bg-white text-apple-ink;
+  }
+
+  /* Apple 특유의 버튼 클릭 시 0.95 크기 축소 마이크로 인터랙션 공용 클래스 */
+  .active-scale {
+    @apply transition-transform duration-100 ease-in-out;
+  }
+  .active-scale:active {
+    @apply scale-95;
   }
 }
