@@ -11,8 +11,8 @@ import type { OrderStatus } from "../types/db";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
-      <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{title}</h3>
+    <div className="bg-apple-canvas border border-apple-hairline rounded-apple-lg p-5 space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+      <h3 className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider mb-1">{title}</h3>
       {children}
     </div>
   );
@@ -23,10 +23,10 @@ function TabButton({ selected, onClick, children }: { selected: boolean; onClick
     <button
       type="button"
       onClick={onClick}
-      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+      className={`flex-shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-normal tracking-tight transition-all active-scale whitespace-nowrap border ${
         selected
-          ? "bg-indigo-600 text-white"
-          : "bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
+          ? "bg-apple-primary border-apple-primary text-white"
+          : "bg-white border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment"
       }`}
     >
       {children}
@@ -34,8 +34,8 @@ function TabButton({ selected, onClick, children }: { selected: boolean; onClick
   );
 }
 
-const fieldCls = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors";
-const labelCls = "block text-xs font-medium text-zinc-400 mb-1.5";
+const fieldCls = "w-full bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans";
+const labelCls = "block text-xs font-semibold text-apple-ink-muted-80 mb-1.5";
 
 export default function OrderFormPage() {
   const { id } = useParams();
@@ -115,12 +115,12 @@ export default function OrderFormPage() {
   return (
     <div className="space-y-4 w-full">
       <div className="flex items-center gap-3">
-        <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors">
+        <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment transition-all active-scale">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
-        <h2 className="text-xl font-bold text-zinc-100">{editing ? "발주 수정" : "발주 등록"}</h2>
+        <h2 className="text-lg font-semibold text-apple-ink tracking-tight">{editing ? "발주 수정" : "발주 등록"}</h2>
       </div>
 
       {/* 소파 선택 */}
@@ -129,8 +129,8 @@ export default function OrderFormPage() {
         <div>
           <label className={labelCls}>브랜드</label>
           {(brands.data ?? []).length === 0
-            ? <p className="text-sm text-zinc-600">브랜드 데이터가 없습니다.</p>
-            : <div className="flex gap-1.5 overflow-x-auto pb-1">
+            ? <p className="text-sm text-apple-ink-muted-48">브랜드 데이터가 없습니다.</p>
+            : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
                 {(brands.data ?? []).map((b) => (
                   <TabButton key={b.id} selected={brandId === b.id} onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); setFlip({}); }}>
                     {b.name}
@@ -145,8 +145,8 @@ export default function OrderFormPage() {
           <div>
             <label className={labelCls}>모델</label>
             {(models.data ?? []).length === 0
-              ? <p className="text-sm text-zinc-600">모델 데이터가 없습니다.</p>
-              : <div className="flex gap-1.5 overflow-x-auto pb-1">
+              ? <p className="text-sm text-apple-ink-muted-48">모델 데이터가 없습니다.</p>
+              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
                   {(models.data ?? []).map((m) => (
                     <TabButton key={m.id} selected={modelId === m.id} onClick={() => { setModelId(m.id); setQty({}); setFlip({}); }}>
                       {m.name}
@@ -162,19 +162,19 @@ export default function OrderFormPage() {
           <div>
             <label className={labelCls}>모듈 조합 (수량 입력)</label>
             {(modules.data ?? []).length === 0 ? (
-              <p className="text-sm text-zinc-600">모듈 데이터가 없습니다.</p>
+              <p className="text-sm text-apple-ink-muted-48">모듈 데이터가 없습니다.</p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
                 {(modules.data ?? []).map((m) => (
                   <div
                     key={m.id}
-                    className={`flex flex-col rounded-xl border overflow-hidden transition-colors ${
+                    className={`flex flex-col rounded-apple-lg border overflow-hidden transition-all duration-200 ${
                       (qty[m.id] ?? 0) > 0
-                        ? "border-indigo-500/40 bg-indigo-600/10"
-                        : "border-zinc-700 bg-zinc-800/50"
+                        ? "border-apple-primary/40 bg-apple-primary/5"
+                        : "border-apple-hairline bg-white"
                     }`}
                   >
-                    <div className="relative aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                    <div className="relative aspect-square bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
                       {m.image_url ? (
                         <img
                           src={m.image_url}
@@ -183,7 +183,7 @@ export default function OrderFormPage() {
                           style={flip[m.id] ? { transform: "scaleX(-1)" } : undefined}
                         />
                       ) : (
-                        <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                         </svg>
                       )}
@@ -192,23 +192,23 @@ export default function OrderFormPage() {
                         type="button"
                         onClick={() => setFlip({ ...flip, [m.id]: !flip[m.id] })}
                         title="좌우 반전"
-                        className={`absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${
+                        className={`absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full transition-all active-scale ${
                           flip[m.id]
-                            ? "bg-indigo-600 text-white"
-                            : "bg-zinc-900/70 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+                            ? "bg-apple-primary text-white"
+                            : "bg-apple-canvas-parchment/80 backdrop-blur text-apple-ink-muted-80 hover:text-apple-ink"
                         }`}
                       >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                         </svg>
                       </button>
                     </div>
-                    <p className="text-xs text-center text-zinc-200 font-medium px-2 pt-2 truncate">{m.name}</p>
-                    <div className="flex items-center justify-center gap-2 p-2">
-                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                    <p className="text-xs text-center text-apple-ink font-semibold px-2.5 pt-2.5 truncate">{m.name}</p>
+                    <div className="flex items-center justify-center gap-2.5 p-2.5">
+                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-full bg-apple-canvas-parchment border border-apple-hairline hover:bg-apple-surface-pearl text-apple-ink transition-colors font-semibold text-sm active-scale"
                         onClick={() => setQty({ ...qty, [m.id]: Math.max(0, (qty[m.id] ?? 0) - 1) })}>−</button>
-                      <span className="w-6 text-center text-sm font-semibold text-zinc-100">{qty[m.id] ?? 0}</span>
-                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                      <span className="w-6 text-center text-sm font-semibold text-apple-ink">{qty[m.id] ?? 0}</span>
+                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-full bg-apple-canvas-parchment border border-apple-hairline hover:bg-apple-surface-pearl text-apple-ink transition-colors font-semibold text-sm active-scale"
                         onClick={() => setQty({ ...qty, [m.id]: (qty[m.id] ?? 0) + 1 })}>+</button>
                     </div>
                   </div>
@@ -223,17 +223,17 @@ export default function OrderFormPage() {
       <Section title="원단 선택">
         <div>
           <label className={labelCls}>원단회사</label>
-          {(fabricCompanies.data ?? []).length === 0
-            ? <p className="text-sm text-zinc-600">원단회사 데이터가 없습니다.</p>
-            : <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {(fabricCompanies.data ?? []).map((c) => (
-                  <TabButton key={c.id} selected={companyFabricId === c.id} onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}>
-                    {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded flex-shrink-0" />}
-                    {c.name}
-                  </TabButton>
-                ))}
-              </div>
-          }
+            {(fabricCompanies.data ?? []).length === 0
+              ? <p className="text-sm text-apple-ink-muted-48">원단회사 데이터가 없습니다.</p>
+              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+                  {(fabricCompanies.data ?? []).map((c) => (
+                    <TabButton key={c.id} selected={companyFabricId === c.id} onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}>
+                      {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded-full flex-shrink-0" />}
+                      {c.name}
+                    </TabButton>
+                  ))}
+                </div>
+            }
         </div>
 
         {/* 원단 이미지 카드 그리드 */}
@@ -241,32 +241,32 @@ export default function OrderFormPage() {
           <div>
             <label className={labelCls}>원단 선택</label>
             {(fabrics.data ?? []).length === 0 ? (
-              <p className="text-sm text-zinc-600">원단 데이터가 없습니다.</p>
+              <p className="text-sm text-apple-ink-muted-48">원단 데이터가 없습니다.</p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
                 {(fabrics.data ?? []).map((f) => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setFabricId(f.id)}
-                    className={`flex flex-col rounded-xl border overflow-hidden transition-colors text-left ${
+                    className={`flex flex-col rounded-apple-lg border overflow-hidden transition-all duration-200 text-left active-scale ${
                       fabricId === f.id
-                        ? "border-indigo-500/60 bg-indigo-600/10"
-                        : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                        ? "border-apple-primary/40 bg-apple-primary/5"
+                        : "border-apple-hairline bg-white hover:border-zinc-300"
                     }`}
                   >
-                    <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                    <div className="aspect-square bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
                       {f.image_url ? (
                         <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
                       ) : (
-                        <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <svg className="w-8 h-8 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                         </svg>
                       )}
                     </div>
-                    <div className="px-2.5 py-2">
-                      <p className={`text-sm font-medium truncate ${fabricId === f.id ? "text-indigo-300" : "text-zinc-200"}`}>{f.name}</p>
-                      <p className="text-xs text-zinc-500 truncate">{f.color}</p>
+                    <div className="px-3 py-2.5">
+                      <p className={`text-sm font-semibold truncate ${fabricId === f.id ? "text-apple-primary" : "text-apple-ink"}`}>{f.name}</p>
+                      <p className="text-xs text-apple-ink-muted-48 mt-0.5 truncate">{f.color}</p>
                     </div>
                   </button>
                 ))}
@@ -280,9 +280,9 @@ export default function OrderFormPage() {
       <Section title="발주 정보">
         <div>
           <label className={labelCls}>발주회사</label>
-          {(orderCompanies.data ?? []).length === 0
-            ? <p className="text-sm text-zinc-600">발주회사 데이터가 없습니다.</p>
-            : <div className="flex gap-1.5 overflow-x-auto pb-1">
+            {(orderCompanies.data ?? []).length === 0
+              ? <p className="text-sm text-apple-ink-muted-48">발주회사 데이터가 없습니다.</p>
+              : <div className="flex gap-1.5 overflow-x-auto pb-1.5">
                 {(orderCompanies.data ?? []).map((c) => (
                   <TabButton key={c.id} selected={orderCompanyId === c.id} onClick={() => setOrderCompanyId(c.id)}>
                     {c.name}
@@ -303,8 +303,8 @@ export default function OrderFormPage() {
                 key={s}
                 type="button"
                 onClick={() => setStatus(s)}
-                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap border ${
-                  status === s ? statusBadge(s) : "text-zinc-400 border-zinc-700 bg-zinc-800 hover:text-zinc-100 hover:bg-zinc-700"
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-normal transition-all active-scale whitespace-nowrap border ${
+                  status === s ? statusBadge(s) : "text-apple-ink-muted-80 border-apple-hairline bg-white hover:text-apple-ink hover:bg-apple-canvas-parchment"
                 }`}
               >
                 {statusLabel(s)}
@@ -321,13 +321,13 @@ export default function OrderFormPage() {
       {/* 버튼 */}
       <div className="flex gap-2">
         <button
-          className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl py-3 text-sm transition-colors"
+          className="flex-1 bg-apple-primary hover:bg-apple-primary-focus text-white font-semibold rounded-full py-3 text-sm transition-all active-scale"
           onClick={submit}
         >
           {editing ? "수정 저장" : "발주 등록"}
         </button>
         <button
-          className="border border-zinc-700 hover:border-zinc-600 text-zinc-400 hover:text-zinc-100 rounded-xl py-3 px-5 text-sm transition-colors"
+          className="border border-apple-hairline hover:border-zinc-300 text-apple-ink-muted-80 hover:text-apple-ink rounded-full py-3 px-6 text-sm transition-all active-scale bg-white"
           onClick={() => nav(-1)}
         >
           취소

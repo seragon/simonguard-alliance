@@ -21,28 +21,29 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     if (!o) return;
+    const order = o;
     setPdfOrder(null);
     async function resolve() {
-      const fabricImg = o.fabric_image_url ? await toBase64(o.fabric_image_url) : null;
+      const fabricImg = order.fabric_image_url ? await toBase64(order.fabric_image_url) : null;
       const items = await Promise.all(
-        o.items.map(async (it) => ({
+        order.items.map(async (it) => ({
           ...it,
           image_url: it.image_url ? await toBase64(it.image_url, it.flipped) : null,
         }))
       );
-      setPdfOrder({ ...o, fabric_image_url: fabricImg, items });
+      setPdfOrder({ ...order, fabric_image_url: fabricImg, items });
     }
     resolve();
   }, [o]);
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-40">
-      <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-apple-primary border-t-transparent rounded-full animate-spin" />
     </div>
   );
   if (!o) return (
     <div className="flex items-center justify-center h-40">
-      <p className="text-zinc-500">발주를 찾을 수 없습니다.</p>
+      <p className="text-apple-ink-muted-48">발주를 찾을 수 없습니다.</p>
     </div>
   );
 
@@ -50,24 +51,24 @@ export default function OrderDetailPage() {
     <div className="space-y-4 w-full">
       {/* 헤더 */}
       <div className="flex items-start gap-3">
-        <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors flex-shrink-0 mt-0.5">
+        <button onClick={() => nav(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-apple-hairline text-apple-ink-muted-80 hover:text-apple-ink hover:bg-apple-canvas-parchment transition-all active-scale flex-shrink-0 mt-0.5">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-bold text-zinc-100">{o.order_no}</h2>
-          <p className="text-sm text-zinc-500 mt-0.5">{o.brand_name} {o.model_name}</p>
+          <h2 className="text-xl font-bold text-apple-ink tracking-tight">{o.order_no}</h2>
+          <p className="text-sm text-apple-ink-muted-48 mt-0.5">{o.brand_name} {o.model_name}</p>
           {/* 상태 선택 버튼 - 항상 표시, 클릭 즉시 저장 */}
           <div className="flex flex-wrap gap-2 mt-3">
             {ALL_STATUSES.map((s) => (
               <button
                 key={s}
                 disabled={updateStatus.isPending}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-all active-scale ${
                   o.status === s
                     ? statusBadge(s)
-                    : "text-zinc-500 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                    : "text-apple-ink-muted-80 border-apple-hairline bg-white hover:text-apple-ink hover:bg-apple-canvas-parchment"
                 }`}
                 onClick={async () => {
                   if (o.status === s) return;
@@ -87,54 +88,54 @@ export default function OrderDetailPage() {
       </div>
 
       {/* 기본 정보 */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-zinc-800">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">기본 정보</p>
+      <div className="bg-white border border-apple-hairline rounded-apple-lg overflow-hidden">
+        <div className="px-4 py-3 border-b border-apple-hairline">
+          <p className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider">기본 정보</p>
         </div>
         {/* 발주회사 */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-800">
-          <span className="text-sm text-zinc-500">발주회사</span>
-          <span className="text-sm text-zinc-100 font-medium">{o.order_company_name}</span>
+        <div className="flex justify-between items-center px-4 py-3 border-b border-apple-hairline">
+          <span className="text-sm text-apple-ink-muted-80">발주회사</span>
+          <span className="text-sm text-apple-ink font-medium">{o.order_company_name}</span>
         </div>
 
         {/* 원단: 라벨 좌측, 이미지+이름 우측 세로 정렬 */}
-        <div className="px-4 py-3 border-b border-zinc-800 flex justify-between items-start gap-4">
-          <span className="text-sm text-zinc-500 pt-1">원단</span>
+        <div className="px-4 py-3 border-b border-apple-hairline flex justify-between items-start gap-4">
+          <span className="text-sm text-apple-ink-muted-80 pt-1">원단</span>
           <div className="flex flex-col items-end gap-1.5">
             {o.fabric_image_url && (
               <img
                 src={o.fabric_image_url}
                 alt="원단 이미지"
-                className="w-32 h-32 object-cover rounded-lg border border-zinc-700"
+                className="w-32 h-32 object-cover rounded-apple-lg border border-apple-hairline"
               />
             )}
-            <span className="text-sm text-zinc-100 font-medium text-right">{o.fabric_label}</span>
+            <span className="text-sm text-apple-ink font-medium text-right">{o.fabric_label}</span>
           </div>
         </div>
 
         {/* 발주일 */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-800">
-          <span className="text-sm text-zinc-500">발주일</span>
-          <span className="text-sm text-zinc-100 font-medium">{o.order_date}</span>
+        <div className="flex justify-between items-center px-4 py-3 border-b border-apple-hairline">
+          <span className="text-sm text-apple-ink-muted-80">발주일</span>
+          <span className="text-sm text-apple-ink font-medium">{o.order_date}</span>
         </div>
 
         {/* 납기일 */}
         <div className="flex justify-between items-center px-4 py-3">
-          <span className="text-sm text-zinc-500">납기일</span>
-          <span className="text-sm text-zinc-100 font-medium">{o.due_date}</span>
+          <span className="text-sm text-apple-ink-muted-80">납기일</span>
+          <span className="text-sm text-apple-ink font-medium">{o.due_date}</span>
         </div>
       </div>
 
       {/* 모듈 조합 - 가로 가득 채우는 카드 레이아웃 */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-zinc-800">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">모듈 조합</p>
+      <div className="bg-white border border-apple-hairline rounded-apple-lg overflow-hidden">
+        <div className="px-4 py-3 border-b border-apple-hairline">
+          <p className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider">모듈 조합</p>
         </div>
         <div className="flex flex-col gap-4 p-4">
           {o.items.map((it) => (
-            <div key={it.module_id} className="bg-zinc-800/60 border border-zinc-700/60 rounded-xl overflow-hidden flex flex-col w-full">
+            <div key={it.module_id} className="bg-apple-canvas-parchment/60 border border-apple-hairline rounded-apple-lg overflow-hidden flex flex-col w-full">
               {/* 모듈 이미지 */}
-              <div className="w-full aspect-video md:aspect-[21/9] bg-zinc-800 flex items-center justify-center overflow-hidden">
+              <div className="w-full aspect-video md:aspect-[21/9] bg-apple-canvas-parchment flex items-center justify-center overflow-hidden">
                 {it.image_url ? (
                   <img
                     src={it.image_url}
@@ -143,15 +144,15 @@ export default function OrderDetailPage() {
                     style={it.flipped ? { transform: "scaleX(-1)" } : undefined}
                   />
                 ) : (
-                  <svg className="w-12 h-12 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="w-12 h-12 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                   </svg>
                 )}
               </div>
               {/* 이름 + 수량 */}
-              <div className="p-3 flex justify-between items-center bg-zinc-900/40 border-t border-zinc-800/80">
-                <p className="text-sm text-zinc-200 font-medium truncate flex-1">{it.module_name}</p>
-                <span className="text-sm text-indigo-400 font-semibold flex-shrink-0">× {it.quantity}</span>
+              <div className="p-3 flex justify-between items-center bg-white border-t border-apple-hairline">
+                <p className="text-sm text-apple-ink font-medium truncate flex-1">{it.module_name}</p>
+                <span className="text-sm text-apple-primary font-semibold flex-shrink-0">× {it.quantity}</span>
               </div>
             </div>
           ))}
@@ -160,9 +161,9 @@ export default function OrderDetailPage() {
 
       {/* 비고 */}
       {o.note && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">비고</p>
-          <p className="text-sm text-zinc-300 whitespace-pre-wrap">{o.note}</p>
+        <div className="bg-white border border-apple-hairline rounded-apple-lg px-4 py-3">
+          <p className="text-xs font-semibold text-apple-ink-muted-80 uppercase tracking-wider mb-2">비고</p>
+          <p className="text-sm text-apple-ink whitespace-pre-wrap">{o.note}</p>
         </div>
       )}
 
@@ -172,7 +173,7 @@ export default function OrderDetailPage() {
           <PDFDownloadLink
             document={<OrderSheetDocument order={pdfOrder} />}
             fileName={`${o.order_no}.pdf`}
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-apple-primary hover:bg-apple-primary-focus text-white rounded-full px-4 py-2.5 text-sm font-medium transition-all active-scale"
           >
             {({ loading }) => (
               <>
@@ -184,14 +185,14 @@ export default function OrderDetailPage() {
             )}
           </PDFDownloadLink>
         ) : (
-          <button disabled className="inline-flex items-center gap-2 bg-indigo-800 text-indigo-300 rounded-xl px-4 py-2.5 text-sm font-medium cursor-not-allowed">
-            <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+          <button disabled className="inline-flex items-center gap-2 bg-apple-canvas border border-apple-hairline text-apple-ink-muted-48 rounded-full px-4 py-2.5 text-sm font-medium cursor-not-allowed">
+            <div className="w-4 h-4 border-2 border-apple-primary border-t-transparent rounded-full animate-spin" />
             이미지 로드 중…
           </button>
         )}
         <Link
           to={`/orders/${o.id}/edit`}
-          className="inline-flex items-center gap-2 border border-zinc-700 hover:border-zinc-600 text-zinc-300 hover:text-zinc-100 rounded-xl px-4 py-2.5 text-sm transition-colors"
+          className="inline-flex items-center gap-2 border border-apple-hairline hover:border-zinc-300 bg-white text-apple-ink-muted-80 hover:text-apple-ink rounded-full px-4 py-2.5 text-sm transition-all active-scale"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -199,7 +200,7 @@ export default function OrderDetailPage() {
           수정
         </Link>
         <button
-          className="inline-flex items-center gap-2 border border-red-900/50 hover:border-red-700/70 text-red-500 hover:text-red-400 rounded-xl px-4 py-2.5 text-sm transition-colors"
+          className="inline-flex items-center gap-2 border border-red-200 bg-white hover:bg-red-50 text-red-500 rounded-full px-4 py-2.5 text-sm transition-all active-scale"
           onClick={async () => {
             if (!confirm("이 발주를 삭제할까요?")) return;
             try { await del.mutateAsync(o.id); show("삭제됨"); nav("/"); }

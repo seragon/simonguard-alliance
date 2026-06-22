@@ -24,8 +24,8 @@ const sample: OrderWithRefs = {
   order_company_name: "테스트 발주회사",
   fabric_image_url: null,
   items: [
-    { module_id: "module-1", module_name: "좌측 팔걸이", quantity: 2, image_url: null },
-    { module_id: "module-2", module_name: "우측 팔걸이", quantity: 1, image_url: null },
+    { module_id: "module-1", module_name: "좌측 팔걸이", quantity: 2, image_url: null, flipped: false },
+    { module_id: "module-2", module_name: "우측 팔걸이", quantity: 1, image_url: null, flipped: false },
   ],
 };
 

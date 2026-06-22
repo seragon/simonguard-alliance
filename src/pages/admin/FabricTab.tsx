@@ -52,11 +52,10 @@ export default function FabricTab() {
               <button
                 key={c.id}
                 onClick={() => { setCompanyId(c.id); setFabricModalOpen(false); }}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                  companyId === c.id
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${companyId === c.id
                     ? "bg-indigo-600 text-white"
                     : "bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
-                }`}
+                  }`}
               >
                 {c.image_url && <img src={c.image_url} alt="" className="w-4 h-4 object-cover rounded flex-shrink-0" />}
                 {c.name}
