@@ -1,7 +1,7 @@
 // 발주 폼 검증 순수 함수
 export interface OrderFormInput {
   brand_id: string; model_id: string; fabric_id: string; order_company_id: string;
-  due_date: string; items: { module_id: string; quantity: number }[];
+  due_date: string; items: { module_id: string; quantity: number; flipped?: boolean }[];
 }
 
 export function validateOrderForm(i: OrderFormInput): string[] {

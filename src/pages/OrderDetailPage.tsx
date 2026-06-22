@@ -1,10 +1,13 @@
 // 발주 상세: 내용 조회, 상태 즉시 변경, 수정/삭제, PDF
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { useOrder, useDeleteOrder, useUpdateOrder } from "../data/orders";
+import { useOrder, useDeleteOrder, useUpdateOrderStatus } from "../data/orders";
+import type { OrderWithRefs } from "../data/orders";
 import { statusLabel, statusBadge, ALL_STATUSES } from "../domain/status";
 import { useToast } from "../components/Toast";
 import { OrderSheetDocument } from "../pdf/OrderSheetDocument";
+import { toBase64 } from "../lib/imageToBase64";
 import type { OrderStatus } from "../types/db";
 
 export default function OrderDetailPage() {
@@ -13,7 +16,24 @@ export default function OrderDetailPage() {
   const { show } = useToast();
   const { data: o, isLoading } = useOrder(id);
   const del = useDeleteOrder();
-  const updateOrder = useUpdateOrder();
+  const updateStatus = useUpdateOrderStatus();
+  const [pdfOrder, setPdfOrder] = useState<OrderWithRefs | null>(null);
+
+  useEffect(() => {
+    if (!o) return;
+    setPdfOrder(null);
+    async function resolve() {
+      const fabricImg = o.fabric_image_url ? await toBase64(o.fabric_image_url) : null;
+      const items = await Promise.all(
+        o.items.map(async (it) => ({
+          ...it,
+          image_url: it.image_url ? await toBase64(it.image_url, it.flipped) : null,
+        }))
+      );
+      setPdfOrder({ ...o, fabric_image_url: fabricImg, items });
+    }
+    resolve();
+  }, [o]);
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-40">
@@ -43,7 +63,7 @@ export default function OrderDetailPage() {
             {ALL_STATUSES.map((s) => (
               <button
                 key={s}
-                disabled={updateOrder.isPending}
+                disabled={updateStatus.isPending}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   o.status === s
                     ? statusBadge(s)
@@ -52,11 +72,7 @@ export default function OrderDetailPage() {
                 onClick={async () => {
                   if (o.status === s) return;
                   try {
-                    await updateOrder.mutateAsync({
-                      id: o.id,
-                      order: { status: s as OrderStatus },
-                      items: o.items.map((it) => ({ module_id: it.module_id, quantity: it.quantity })),
-                    });
+                    await updateStatus.mutateAsync({ id: o.id, status: s as OrderStatus });
                     show(`상태 변경: ${statusLabel(s)}`);
                   } catch {
                     show("상태 변경 실패", "error");
@@ -72,6 +88,9 @@ export default function OrderDetailPage() {
 
       {/* 기본 정보 */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-zinc-800">
+          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">기본 정보</p>
+        </div>
         {/* 발주회사 */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-800">
           <span className="text-sm text-zinc-500">발주회사</span>
@@ -117,7 +136,12 @@ export default function OrderDetailPage() {
               {/* 모듈 이미지 */}
               <div className="w-full aspect-video md:aspect-[21/9] bg-zinc-800 flex items-center justify-center overflow-hidden">
                 {it.image_url ? (
-                  <img src={it.image_url} alt={it.module_name} className="w-full h-full object-cover" />
+                  <img
+                    src={it.image_url}
+                    alt={it.module_name}
+                    className="w-full h-full object-cover"
+                    style={it.flipped ? { transform: "scaleX(-1)" } : undefined}
+                  />
                 ) : (
                   <svg className="w-12 h-12 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
@@ -144,20 +168,27 @@ export default function OrderDetailPage() {
 
       {/* 액션 버튼 */}
       <div className="flex gap-2 flex-wrap">
-        <PDFDownloadLink
-          document={<OrderSheetDocument order={o} />}
-          fileName={`${o.order_no}.pdf`}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
-        >
-          {({ loading }) => (
-            <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-              {loading ? "PDF 생성 중…" : "발주서 PDF"}
-            </>
-          )}
-        </PDFDownloadLink>
+        {pdfOrder ? (
+          <PDFDownloadLink
+            document={<OrderSheetDocument order={pdfOrder} />}
+            fileName={`${o.order_no}.pdf`}
+            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            {({ loading }) => (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                {loading ? "PDF 생성 중…" : "발주서 PDF"}
+              </>
+            )}
+          </PDFDownloadLink>
+        ) : (
+          <button disabled className="inline-flex items-center gap-2 bg-indigo-800 text-indigo-300 rounded-xl px-4 py-2.5 text-sm font-medium cursor-not-allowed">
+            <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            이미지 로드 중…
+          </button>
+        )}
         <Link
           to={`/orders/${o.id}/edit`}
           className="inline-flex items-center gap-2 border border-zinc-700 hover:border-zinc-600 text-zinc-300 hover:text-zinc-100 rounded-xl px-4 py-2.5 text-sm transition-colors"

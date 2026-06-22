@@ -18,6 +18,22 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+function TabButton({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+        selected
+          ? "bg-indigo-600 text-white"
+          : "bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 const fieldCls = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors";
 const labelCls = "block text-xs font-medium text-zinc-400 mb-1.5";
 
@@ -38,6 +54,7 @@ export default function OrderFormPage() {
   const [status, setStatus] = useState<OrderStatus>("ordered");
   const [note, setNote] = useState("");
   const [qty, setQty] = useState<Record<string, number>>({});
+  const [flip, setFlip] = useState<Record<string, boolean>>({});
 
   const brands = useBrands();
   const models = useSofaModels(brandId);
@@ -55,12 +72,26 @@ export default function OrderFormPage() {
       setOrderCompanyId(o.order_company_id); setDueDate(o.due_date);
       setStatus(o.status); setNote(o.note);
       setQty(Object.fromEntries(o.items.map((it) => [it.module_id, it.quantity])));
+      setFlip(Object.fromEntries(o.items.filter((it) => it.flipped).map((it) => [it.module_id, true])));
     }
   }, [editing, existing.data]);
 
+  // 수정 모드에서 원단회사 id 초기화 (fabric_id로 역추적)
+  useEffect(() => {
+    if (editing && existing.data && fabricCompanies.data) {
+      const fabricId = existing.data.fabric_id;
+      // 현재 선택된 원단의 company_id를 찾아서 설정
+      // fabrics 데이터가 없으므로 일단 첫 번째 회사를 기본값으로
+      if (!companyFabricId && fabricCompanies.data.length > 0) {
+        setCompanyFabricId(fabricCompanies.data[0].id);
+      }
+      void fabricId;
+    }
+  }, [editing, existing.data, fabricCompanies.data, companyFabricId]);
+
   const items = Object.entries(qty)
     .filter(([, q]) => q > 0)
-    .map(([module_id, quantity]) => ({ module_id, quantity }));
+    .map(([module_id, quantity]) => ({ module_id, quantity, flipped: flip[module_id] ?? false }));
 
   async function submit() {
     const errors = validateOrderForm({ brand_id: brandId, model_id: modelId, fabric_id: fabricId, order_company_id: orderCompanyId, due_date: dueDate, items });
@@ -97,54 +128,36 @@ export default function OrderFormPage() {
         {/* 브랜드 */}
         <div>
           <label className={labelCls}>브랜드</label>
-          <div className="flex flex-wrap gap-2">
-            {(brands.data ?? []).map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  brandId === b.id
-                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                }`}
-              >
-                {b.name}
-              </button>
-            ))}
-            {(brands.data ?? []).length === 0 && (
-              <p className="text-sm text-zinc-600">브랜드 데이터가 없습니다.</p>
-            )}
-          </div>
+          {(brands.data ?? []).length === 0
+            ? <p className="text-sm text-zinc-600">브랜드 데이터가 없습니다.</p>
+            : <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {(brands.data ?? []).map((b) => (
+                  <TabButton key={b.id} selected={brandId === b.id} onClick={() => { setBrandId(b.id); setModelId(""); setQty({}); setFlip({}); }}>
+                    {b.name}
+                  </TabButton>
+                ))}
+              </div>
+          }
         </div>
 
         {/* 모델 */}
         {brandId && (
           <div>
             <label className={labelCls}>모델</label>
-            <div className="flex flex-wrap gap-2">
-              {(models.data ?? []).map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => { setModelId(m.id); setQty({}); }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                    modelId === m.id
-                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                  }`}
-                >
-                  {m.name}
-                </button>
-              ))}
-              {(models.data ?? []).length === 0 && (
-                <p className="text-sm text-zinc-600">모델 데이터가 없습니다.</p>
-              )}
-            </div>
+            {(models.data ?? []).length === 0
+              ? <p className="text-sm text-zinc-600">모델 데이터가 없습니다.</p>
+              : <div className="flex gap-1.5 overflow-x-auto pb-1">
+                  {(models.data ?? []).map((m) => (
+                    <TabButton key={m.id} selected={modelId === m.id} onClick={() => { setModelId(m.id); setQty({}); setFlip({}); }}>
+                      {m.name}
+                    </TabButton>
+                  ))}
+                </div>
+            }
           </div>
         )}
 
-        {/* 모듈 카드 그리드 (이미지 위, 이름 아래, +/- 수량) */}
+        {/* 모듈 카드 그리드 */}
         {modelId && (
           <div>
             <label className={labelCls}>모듈 조합 (수량 입력)</label>
@@ -161,32 +174,42 @@ export default function OrderFormPage() {
                         : "border-zinc-700 bg-zinc-800/50"
                     }`}
                   >
-                    {/* 이미지 */}
-                    <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                    <div className="relative aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
                       {m.image_url ? (
-                        <img src={m.image_url} alt={m.name} className="w-full h-full object-cover" />
+                        <img
+                          src={m.image_url}
+                          alt={m.name}
+                          className="w-full h-full object-cover transition-transform duration-200"
+                          style={flip[m.id] ? { transform: "scaleX(-1)" } : undefined}
+                        />
                       ) : (
                         <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                         </svg>
                       )}
+                      {/* 좌우 반전 버튼 */}
+                      <button
+                        type="button"
+                        onClick={() => setFlip({ ...flip, [m.id]: !flip[m.id] })}
+                        title="좌우 반전"
+                        className={`absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${
+                          flip[m.id]
+                            ? "bg-indigo-600 text-white"
+                            : "bg-zinc-900/70 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+                        }`}
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                        </svg>
+                      </button>
                     </div>
-                    {/* 이름 */}
                     <p className="text-xs text-center text-zinc-200 font-medium px-2 pt-2 truncate">{m.name}</p>
-                    {/* 수량 조절 */}
                     <div className="flex items-center justify-center gap-2 p-2">
-                      <button
-                        type="button"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
-                        onClick={() => setQty({ ...qty, [m.id]: Math.max(0, (qty[m.id] ?? 0) - 1) })
-                        }
-                      >−</button>
+                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                        onClick={() => setQty({ ...qty, [m.id]: Math.max(0, (qty[m.id] ?? 0) - 1) })}>−</button>
                       <span className="w-6 text-center text-sm font-semibold text-zinc-100">{qty[m.id] ?? 0}</span>
-                      <button
-                        type="button"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
-                        onClick={() => setQty({ ...qty, [m.id]: (qty[m.id] ?? 0) + 1 })}
-                      >+</button>
+                      <button type="button" className="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-bold text-sm"
+                        onClick={() => setQty({ ...qty, [m.id]: (qty[m.id] ?? 0) + 1 })}>+</button>
                     </div>
                   </div>
                 ))}
@@ -198,53 +221,57 @@ export default function OrderFormPage() {
 
       {/* 원단 선택 */}
       <Section title="원단 선택">
-        {/* 원단회사 */}
         <div>
           <label className={labelCls}>원단회사</label>
-          <div className="flex flex-wrap gap-2">
-            {(fabricCompanies.data ?? []).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  companyFabricId === c.id
-                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
-            {(fabricCompanies.data ?? []).length === 0 && (
-              <p className="text-sm text-zinc-600">원단회사 데이터가 없습니다.</p>
-            )}
-          </div>
+          {(fabricCompanies.data ?? []).length === 0
+            ? <p className="text-sm text-zinc-600">원단회사 데이터가 없습니다.</p>
+            : <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {(fabricCompanies.data ?? []).map((c) => (
+                  <TabButton key={c.id} selected={companyFabricId === c.id} onClick={() => { setCompanyFabricId(c.id); setFabricId(""); }}>
+                    {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 object-cover rounded flex-shrink-0" />}
+                    {c.name}
+                  </TabButton>
+                ))}
+              </div>
+          }
         </div>
 
-        {/* 원단 (이름/색상) */}
+        {/* 원단 이미지 카드 그리드 */}
         {companyFabricId && (
           <div>
-            <label className={labelCls}>원단 (이름/색상)</label>
-            <div className="flex flex-wrap gap-2">
-              {(fabrics.data ?? []).map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFabricId(f.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                    fabricId === f.id
-                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                  }`}
-                >
-                  {f.name} / {f.color}
-                </button>
-              ))}
-              {(fabrics.data ?? []).length === 0 && (
-                <p className="text-sm text-zinc-600">원단 데이터가 없습니다.</p>
-              )}
-            </div>
+            <label className={labelCls}>원단 선택</label>
+            {(fabrics.data ?? []).length === 0 ? (
+              <p className="text-sm text-zinc-600">원단 데이터가 없습니다.</p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {(fabrics.data ?? []).map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setFabricId(f.id)}
+                    className={`flex flex-col rounded-xl border overflow-hidden transition-colors text-left ${
+                      fabricId === f.id
+                        ? "border-indigo-500/60 bg-indigo-600/10"
+                        : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                    }`}
+                  >
+                    <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                      {f.image_url ? (
+                        <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="px-2.5 py-2">
+                      <p className={`text-sm font-medium truncate ${fabricId === f.id ? "text-indigo-300" : "text-zinc-200"}`}>{f.name}</p>
+                      <p className="text-xs text-zinc-500 truncate">{f.color}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </Section>
@@ -253,25 +280,16 @@ export default function OrderFormPage() {
       <Section title="발주 정보">
         <div>
           <label className={labelCls}>발주회사</label>
-          <div className="flex flex-wrap gap-2">
-            {(orderCompanies.data ?? []).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setOrderCompanyId(c.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  orderCompanyId === c.id
-                    ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
-            {(orderCompanies.data ?? []).length === 0 && (
-              <p className="text-sm text-zinc-600">발주회사 데이터가 없습니다.</p>
-            )}
-          </div>
+          {(orderCompanies.data ?? []).length === 0
+            ? <p className="text-sm text-zinc-600">발주회사 데이터가 없습니다.</p>
+            : <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {(orderCompanies.data ?? []).map((c) => (
+                  <TabButton key={c.id} selected={orderCompanyId === c.id} onClick={() => setOrderCompanyId(c.id)}>
+                    {c.name}
+                  </TabButton>
+                ))}
+              </div>
+          }
         </div>
         <div>
           <label className={labelCls}>납기일</label>
@@ -279,16 +297,14 @@ export default function OrderFormPage() {
         </div>
         <div>
           <label className={labelCls}>상태</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-1.5 overflow-x-auto pb-1">
             {ALL_STATUSES.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setStatus(s)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  status === s
-                    ? statusBadge(s)
-                    : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
+                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap border ${
+                  status === s ? statusBadge(s) : "text-zinc-400 border-zinc-700 bg-zinc-800 hover:text-zinc-100 hover:bg-zinc-700"
                 }`}
               >
                 {statusLabel(s)}

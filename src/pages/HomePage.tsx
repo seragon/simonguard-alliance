@@ -4,7 +4,7 @@ import OrderList from "../components/OrderList";
 
 export default function HomePage() {
   return (
-    <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
+    <div className="space-y-6">
       <OrderCalendar />
       <OrderList />
     </div>

@@ -5,7 +5,7 @@ import type { Order, OrderStatus } from "../types/db";
 import type { OrderFormInput } from "../domain/validation";
 
 /** 발주 + 조인된 표시명을 포함하는 뷰 타입 */
-export interface OrderItemView { module_id: string; module_name: string; quantity: number; image_url: string | null; }
+export interface OrderItemView { module_id: string; module_name: string; quantity: number; image_url: string | null; flipped: boolean; }
 export interface OrderWithRefs extends Order {
   brand_name: string;
   model_name: string;
@@ -19,7 +19,7 @@ export interface OrderWithRefs extends Order {
 const SELECT = `*,
   brands(name), sofa_models(name), order_companies(name),
   fabrics(name, color, image_url, fabric_companies(name)),
-  order_items(quantity, module_id, modules(name, image_url))`;
+  order_items(quantity, module_id, flipped, modules(name, image_url))`;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapRow(r: any): OrderWithRefs {
@@ -38,6 +38,7 @@ function mapRow(r: any): OrderWithRefs {
       module_name: it.modules?.name ?? "",
       quantity: it.quantity,
       image_url: it.modules?.image_url ?? null,
+      flipped: it.flipped ?? false,
     })),
   };
 }
@@ -82,8 +83,8 @@ export function useOrder(id?: string) {
 }
 
 /** order_items insert용 payload 빌더 (순수 함수) */
-export function buildOrderItemsPayload(orderId: string, items: { module_id: string; quantity: number }[]) {
-  return items.map((it) => ({ order_id: orderId, module_id: it.module_id, quantity: it.quantity }));
+export function buildOrderItemsPayload(orderId: string, items: { module_id: string; quantity: number; flipped?: boolean }[]) {
+  return items.map((it) => ({ order_id: orderId, module_id: it.module_id, quantity: it.quantity, flipped: it.flipped ?? false }));
 }
 
 type OrderWrite = Omit<OrderFormInput, "items"> & {
@@ -119,6 +120,18 @@ export function useUpdateOrder() {
         p_order: order,
         p_items: items,
       });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
+  });
+}
+
+/** 발주 상태만 변경 (단순 UPDATE, RPC 불필요) */
+export function useUpdateOrderStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: OrderStatus }) => {
+      const { error } = await supabase.from("orders").update({ status }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),

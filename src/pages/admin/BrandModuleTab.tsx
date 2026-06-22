@@ -18,87 +18,97 @@ export default function BrandModuleTab() {
   return (
     <div className="flex flex-col gap-6">
       {/* 브랜드 */}
-      <div className="space-y-3">
-        <CrudList
-          title="브랜드"
-          items={brands.data ?? []}
-          onCreate={(name) => cB.mutateAsync({ name })}
-          onUpdate={(id, name) => uB.mutateAsync({ id, name })}
-          onDelete={(id) => dB.mutateAsync(id)}
-        />
-        {(brands.data ?? []).length > 0 && (
-          <div className="space-y-1">
-            <p className="text-xs text-zinc-500 font-medium px-1">브랜드 선택 → 모델 관리</p>
-            <div className="flex flex-wrap gap-2">
-              {(brands.data ?? []).map((b) => (
-                <button
-                  key={b.id}
-                  onClick={() => { setBrandId(b.id); setModelId(undefined); }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                    brandId === b.id
-                      ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                      : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                  }`}
-                >
-                  {b.name}
-                </button>
-              ))}
-            </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-zinc-500 font-medium">브랜드</p>
+          <CrudList
+            title="브랜드"
+            items={brands.data ?? []}
+            onCreate={(name) => cB.mutateAsync({ name })}
+            onUpdate={(id, name) => uB.mutateAsync({ id, name })}
+            onDelete={(id) => dB.mutateAsync(id)}
+          />
+        </div>
+        {(brands.data ?? []).length > 0 ? (
+          <div className="flex gap-1.5 overflow-x-auto pb-1">
+            {(brands.data ?? []).map((b) => (
+              <button
+                key={b.id}
+                onClick={() => { setBrandId(b.id); setModelId(undefined); }}
+                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                  brandId === b.id
+                    ? "bg-indigo-600 text-white"
+                    : "bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
           </div>
+        ) : (
+          <p className="text-sm text-zinc-600 px-1">브랜드를 추가하세요.</p>
         )}
       </div>
 
       {/* 소파 모델 */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {brandId ? (
           <>
-            <CrudList
-              title="소파 모델"
-              items={models.data ?? []}
-              onCreate={(name) => cM.mutateAsync({ name, brand_id: brandId })}
-              onUpdate={(id, name) => uM.mutateAsync({ id, name })}
-              onDelete={(id) => dM.mutateAsync(id)}
-            />
-            {(models.data ?? []).length > 0 && (
-              <div className="space-y-1">
-                <p className="text-xs text-zinc-500 font-medium px-1">모델 선택 → 모듈 관리</p>
-                <div className="flex flex-wrap gap-2">
-                  {(models.data ?? []).map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => setModelId(m.id)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                        modelId === m.id
-                          ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                          : "text-zinc-400 border-zinc-700 hover:text-zinc-200 hover:bg-zinc-800"
-                      }`}
-                    >
-                      {m.name}
-                    </button>
-                  ))}
-                </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-zinc-500 font-medium">소파 모델</p>
+              <CrudList
+                title="소파모델"
+                items={models.data ?? []}
+                onCreate={(name) => cM.mutateAsync({ name, brand_id: brandId })}
+                onUpdate={(id, name) => uM.mutateAsync({ id, name })}
+                onDelete={(id) => dM.mutateAsync(id)}
+              />
+            </div>
+            {(models.data ?? []).length > 0 ? (
+              <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {(models.data ?? []).map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setModelId(m.id)}
+                    className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                      modelId === m.id
+                        ? "bg-indigo-600 text-white"
+                        : "bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
+                    }`}
+                  >
+                    {m.name}
+                  </button>
+                ))}
               </div>
+            ) : (
+              <p className="text-sm text-zinc-600 px-1">소파 모델을 추가하세요.</p>
             )}
           </>
         ) : (
-          <div className="flex items-center justify-center h-24 border border-dashed border-zinc-800 rounded-xl">
-            <p className="text-sm text-zinc-600">← 브랜드를 선택하세요.</p>
+          <div className="flex items-center justify-center h-16 border border-dashed border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-600">위에서 브랜드를 선택하세요.</p>
           </div>
         )}
       </div>
 
       {/* 모듈 */}
-      <div>
+      <div className="space-y-2">
         {modelId ? (
-          <ModuleCardGrid
-            items={modules.data ?? []}
-            onCreate={(name, imageUrl) => cMo.mutateAsync({ name, model_id: modelId, image_url: imageUrl })}
-            onUpdate={(id, name, imageUrl) => uMo.mutateAsync({ id, name, image_url: imageUrl })}
-            onDelete={(id) => dMo.mutateAsync(id)}
-          />
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-zinc-500 font-medium">모듈</p>
+              {/* ModuleCardGrid 내부 관리 버튼 사용 */}
+            </div>
+            <ModuleCardGrid
+              items={modules.data ?? []}
+              onCreate={(name, imageUrl) => cMo.mutateAsync({ name, model_id: modelId, image_url: imageUrl })}
+              onUpdate={(id, name, imageUrl) => uMo.mutateAsync({ id, name, image_url: imageUrl })}
+              onDelete={(id) => dMo.mutateAsync(id)}
+            />
+          </>
         ) : (
-          <div className="flex items-center justify-center h-24 border border-dashed border-zinc-800 rounded-xl">
-            <p className="text-sm text-zinc-600">← 모델을 선택하세요.</p>
+          <div className="flex items-center justify-center h-16 border border-dashed border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-600">위에서 소파 모델을 선택하세요.</p>
           </div>
         )}
       </div>
