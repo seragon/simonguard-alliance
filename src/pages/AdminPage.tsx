@@ -58,8 +58,8 @@ export default function AdminPage() {
         <p className="text-sm text-zinc-500 mt-0.5">마스터 데이터 및 계정을 관리합니다.</p>
       </div>
 
-      {/* 탭 */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+      {/* 탭: 모바일 화면에서 가로 스크롤 없이 자연스럽게 줄바꿈되도록 flex-wrap 적용 */}
+      <div className="flex flex-wrap gap-1.5 pb-1">
         {TABS.map((t) => (
           <button
             key={t.key}
