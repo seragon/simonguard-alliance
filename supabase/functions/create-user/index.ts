@@ -24,8 +24,10 @@ Deno.serve(async (req) => {
   const { data: prof } = await caller.from("profiles").select("role").eq("id", user.id).single();
   if (prof?.role !== "super_admin") return json({ error: "forbidden" }, 403);
 
-  const { email, password, name, role } = await req.json();
-  if (!email || !password) return json({ error: "email/password required" }, 400);
+  const { username, password, name, role } = await req.json();
+  if (!username || !password) return json({ error: "username/password required" }, 400);
+
+  const email = `${username.trim()}@simonguard.local`;
 
   // service_role로 사용자 생성
   const admin = createClient(url, service);
@@ -33,7 +35,7 @@ Deno.serve(async (req) => {
     email,
     password,
     email_confirm: true,
-    user_metadata: { name: name ?? "", role: role === "super_admin" ? "super_admin" : "user" },
+    user_metadata: { name: name ?? "", role: role === "super_admin" ? "super_admin" : "user", username: username.trim() },
   });
 
   if (error) return json({ error: error.message }, 400);

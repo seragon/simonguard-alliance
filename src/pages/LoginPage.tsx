@@ -6,7 +6,7 @@ import { useAuth } from "../auth/useAuth";
 export default function LoginPage() {
   const { signIn, session } = useAuth();
   const nav = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -19,9 +19,9 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setErr(null);
-    const { error } = await signIn(email, pw);
+    const { error } = await signIn(username, pw);
     setBusy(false);
-    if (error) setErr("이메일 또는 비밀번호가 올바르지 않습니다.");
+    if (error) setErr("아이디 또는 비밀번호가 올바르지 않습니다.");
     else nav("/", { replace: true });
   }
 
@@ -46,15 +46,15 @@ export default function LoginPage() {
         >
           <div className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-semibold text-apple-ink-muted-80 mb-1.5 tracking-tight">이메일</label>
+              <label className="block text-[11px] font-semibold text-apple-ink-muted-80 mb-1.5 tracking-tight">아이디</label>
               <input
-                type="email"
-                autoComplete="email"
+                type="text"
+                autoComplete="username"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-white border border-apple-hairline text-apple-ink placeholder:text-apple-ink-muted-48 rounded-apple-sm px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-primary/20 focus:border-apple-primary transition-all font-sans"
-                placeholder="admin@example.com"
+                placeholder="아이디 입력"
               />
             </div>
             <div>

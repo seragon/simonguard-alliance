@@ -11,13 +11,13 @@ export default function AccountTab() {
   const accounts = useAccounts();
   const create = useCreateAccount();
   const [open, setOpen] = useState(false);
-  const [f, setF] = useState({ email: "", password: "", name: "", role: "user" as "user" | "super_admin" });
+  const [f, setF] = useState({ username: "", password: "", name: "", role: "user" as "user" | "super_admin" });
 
   async function submit() {
-    if (!f.email || !f.password) { show("이메일/비밀번호를 입력하세요.", "error"); return; }
+    if (!f.username || !f.password) { show("아이디/비밀번호를 입력하세요.", "error"); return; }
     try {
       await create.mutateAsync(f);
-      setF({ email: "", password: "", name: "", role: "user" });
+      setF({ username: "", password: "", name: "", role: "user" });
       setOpen(false);
       show("계정 생성됨");
     } catch (e) {
@@ -47,7 +47,7 @@ export default function AccountTab() {
           <li key={a.id} className="flex items-center justify-between px-4 py-3.5 bg-white hover:bg-apple-canvas-parchment transition-colors">
             <div>
               <p className="text-sm font-semibold text-apple-ink tracking-tight">{a.name || "(이름없음)"}</p>
-              <p className="text-xs text-apple-ink-muted-48 mt-0.5">{a.id.slice(0, 8)}…</p>
+              <p className="text-xs text-apple-ink-muted-48 mt-0.5">{a.username ?? a.id.slice(0, 8)}</p>
             </div>
             <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
               a.role === "super_admin"
@@ -67,9 +67,9 @@ export default function AccountTab() {
       {open && (
         <Modal title="새 계정 생성" onClose={() => setOpen(false)}>
           <div>
-            <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">이메일</label>
-            <input className={inputCls} type="email" placeholder="user@example.com"
-              value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} autoFocus />
+            <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">아이디</label>
+            <input className={inputCls} type="text" autoComplete="username" placeholder="아이디 입력"
+              value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} autoFocus />
           </div>
           <div>
             <label className="block text-xs font-semibold text-apple-ink-muted-80 mb-1.5">비밀번호</label>

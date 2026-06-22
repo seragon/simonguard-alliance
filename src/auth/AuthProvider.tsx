@@ -7,7 +7,7 @@ import type { Profile } from "../types/db";
 
 interface AuthValue {
   session: Session | null; profile: Profile | null; loading: boolean; isSuperAdmin: boolean;
-  signIn: (email: string, pw: string) => Promise<{ error: string | null }>;
+  signIn: (username: string, pw: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 export const AuthContext = createContext<AuthValue | null>(null);
@@ -37,7 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthValue = {
     session, profile, loading, isSuperAdmin: profile?.role === "super_admin",
-    signIn: async (email, pw) => {
+    signIn: async (username, pw) => {
+      const email = `${username.trim()}@simonguard.local`;
       const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
       return { error: error?.message ?? null };
     },

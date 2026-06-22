@@ -97,9 +97,11 @@ function CompanyRow({ item, onSave, onDelete }: {
     <div className="relative group bg-white border border-apple-hairline hover:border-apple-primary/30 rounded-apple-lg p-3.5 flex flex-col items-center gap-2.5 transition-all shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
       {/* 로고 */}
       {item.image_url ? (
-        <img src={item.image_url} alt={item.name} className="w-full h-auto rounded-apple-sm" />
+        <div className="w-full max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/20 rounded-apple-sm">
+          <img src={item.image_url} alt={item.name} className="w-full h-auto object-contain" />
+        </div>
       ) : (
-        <div className="w-full aspect-square rounded-apple-sm bg-apple-canvas-parchment border border-apple-hairline flex items-center justify-center">
+        <div className="w-full max-h-[60px] min-h-[50px] rounded-apple-sm bg-apple-canvas-parchment border border-apple-hairline flex items-center justify-center mb-1.5">
           <svg className="w-6 h-6 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
           </svg>

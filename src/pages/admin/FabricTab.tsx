@@ -58,11 +58,11 @@ export default function FabricTab() {
                   }`}
               >
                 {c.image_url ? (
-                  <div className="w-full aspect-[2/1] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30">
+                  <div className="w-full max-h-[60px] min-h-[50px] flex items-center justify-center overflow-hidden mb-1.5 bg-white border border-apple-hairline/30 rounded-apple-sm">
                     <img src={c.image_url} alt="" className="w-full h-auto object-contain" />
                   </div>
                 ) : (
-                  <div className="w-full aspect-[2/1] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5">
+                  <div className="w-full max-h-[60px] min-h-[50px] bg-apple-canvas border border-apple-hairline flex items-center justify-center mb-1.5 rounded-apple-sm">
                     <svg className="w-4 h-4 text-apple-ink-muted-48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                     </svg>
