@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useOrders } from "../data/orders";
 import { groupOrdersByDueDate } from "../domain/calendar";
-import { statusColor, statusLabel } from "../domain/status";
+import { statusColor, statusLabel, statusBadge } from "../domain/status";
 import { monthMatrix, ymd } from "./calendarGrid";
 
 export default function OrderCalendar() {
@@ -107,21 +107,38 @@ export default function OrderCalendar() {
 
       {/* 선택된 날짜의 발주 목록 */}
       {selected && (
-        <div className="bg-white border border-apple-hairline rounded-apple-lg p-3 space-y-2 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
-          <p className="text-xs font-semibold text-apple-ink-muted-80">{selected} 납기</p>
+        <div className="bg-white border border-apple-hairline rounded-apple-lg p-4 space-y-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+          <p className="text-xs font-semibold text-apple-ink-muted-80">{selected} 납기 발주</p>
           {selectedOrders.length === 0 ? (
-            <p className="text-sm text-apple-ink-muted-48">발주 없음</p>
+            <div className="bg-apple-canvas border border-apple-hairline rounded-apple-lg py-8 text-center">
+              <p className="text-apple-ink-muted-48 text-xs">납기 예정인 발주가 없습니다.</p>
+            </div>
           ) : (
-            <ul className="space-y-1.5">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {selectedOrders.map((o) => (
-                <li key={o.id}>
+                <li key={o.id} className="bg-apple-canvas border border-apple-hairline rounded-apple-lg transition-all duration-200 hover:border-apple-primary/30 active-scale shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                   <Link
                     to={`/orders/${o.id}`}
-                    className="flex items-center gap-2 text-sm text-apple-ink-muted-80 hover:text-apple-ink transition-colors"
+                    className="flex flex-col justify-between p-3.5 h-full min-h-[90px]"
                   >
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${statusColor(o.status)}`} />
-                    <span className="truncate">{o.brand_name} {o.model_name}</span>
-                    <span className="text-xs text-apple-ink-muted-48 flex-shrink-0">{statusLabel(o.status)}</span>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm text-apple-ink tracking-tight truncate">{o.brand_name} {o.model_name}</p>
+                        <p className="text-[11px] text-apple-ink-muted-80 font-normal mt-0.5 truncate">{o.order_company_name}</p>
+                      </div>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold tracking-tight flex-shrink-0 ${statusBadge(o.status)}`}>
+                        {statusLabel(o.status)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-apple-divider-soft mt-3 pt-2 text-[10px] text-apple-ink-muted-48">
+                      <span>납기 {o.due_date}</span>
+                      <span className="text-apple-primary font-medium inline-flex items-center gap-0.5">
+                        상세보기
+                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
